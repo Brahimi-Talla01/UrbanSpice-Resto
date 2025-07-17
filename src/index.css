@@ -1,0 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Outfit:wght@100..900&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+    --font-outfit: "Outfit", sans-serif;
+    --font-open: "Open Sans", sans-serif;
+
+    /* Light Theme */
+    --color-background-top-light: oklch(0.97 0.01 27);
+    --text-color-light: oklch(0.74 0.13 77);
+    --text-color-white-light: oklch(1 0 0);
+    --text-color-dark-light: oklch(0 0 0);
+    --color-background-dark-light: oklch(0 0 0);
+    --color-background-menu-light: oklch(0.7 0.16 77);
+
+    /* Dark Theme */
+    --color-background-menu-dark: oklch(0.24 0.02 259);
+    --text-color-dark: oklch(1 0 0);
+    --text-color-white-dark: oklch(1 0 0);
+    --text-color-light-dark: oklch(0.74 0.13 77);
+    --color-background-top-dark: oklch(0.24 0.02 259);
+}
+
+.swiper-button-prev,
+.swiper-button-next {
+    display: none !important;
+}
+
+/* Styliser le conteneur des points */
+.swiper-pagination {
+    z-index: 50 !important;
+    bottom: 20px !important; /* Position depuis le bas */
+}
+
+/* Styliser chaque point */
+.swiper-pagination-bullet {
+    width: 12px !important;
+    height: 12px !important;
+    background: white !important;
+    border: 2px solid white !important;
+    opacity: 1 !important;
+    margin: 0 8px !important;
+    transition: all 0.3s ease !important;
+}
+
+/* Styliser le point actif */
+.swiper-pagination-bullet-active {
+    background: yellow !important;
+    transform: scale(1.2) !important;
+}
