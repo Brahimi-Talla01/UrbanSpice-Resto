@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { X } from 'lucide-react';
 import FoodList from './FoodList';
 import { card_menu } from '../assets/assets/assets';
+import { ToastContainer } from 'react-toastify';
 
 const FoodDisplay = () => {
 
@@ -92,7 +93,7 @@ const FoodDisplay = () => {
 
                     {/*Cancel Filter */}
                     <div
-                        className="flex items-center gap-3 pl-2 pr-4 py-1 rounded-md bg-white/60 hover:bg-white transition-colors cursor-pointer"
+                        className="flex items-center gap-3 pl-2 pr-4 py-3 rounded-md bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer"
                     >
                         <input
                             type="radio"
@@ -116,7 +117,7 @@ const FoodDisplay = () => {
                         {moment_of_the_day.map((moment, index) => (
                             <div
                                 key={index}
-                                className="flex items-center gap-3 pl-2 pr-4 py-1 rounded-md bg-white/60 hover:bg-white transition-colors cursor-pointer"
+                                className="flex items-center gap-3 pl-2 pr-4 py-3 rounded-md bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer"
                             >
                                 <input
                                     type="radio"
@@ -143,7 +144,7 @@ const FoodDisplay = () => {
                             {type_of_dish.map((dish, index) => (
                                 <div
                                     key={index}
-                                    className="flex items-center gap-3 pl-2 pr-4 py-1 rounded-md bg-white/60 hover:bg-white transition-colors cursor-pointer"
+                                    className="flex items-center gap-3 pl-2 pr-4 py-3 rounded-md bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer"
                                 >
                                     <input
                                         type="radio"
@@ -171,7 +172,7 @@ const FoodDisplay = () => {
                             {culinary_origin.map((culinary, index) => (
                                 <div
                                     key={index}
-                                    className="flex items-center gap-3 pl-2 pr-4 py-1 rounded-md bg-white/60 hover:bg-white transition-colors cursor-pointer"
+                                    className="flex items-center gap-3 pl-2 pr-4 py-3 rounded-md bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer"
                                 >
                                     <input
                                         type="radio"
@@ -248,7 +249,7 @@ const FoodDisplay = () => {
                         {/*Cancel Filter */}
                         <div className='mb-6'>
                             <div
-                                className="flex items-center gap-3 pl-2 pr-4 py-1 rounded-md bg-white/60 hover:bg-white transition-colors cursor-pointer"
+                                className="flex items-center gap-3 pl-2 pr-4 py-3 rounded-md bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer"
                             >
                                 <input
                                     type="radio"
@@ -389,6 +390,7 @@ const FoodDisplay = () => {
                                 <FoodList
                                     key={card.id}
                                     card={card}
+                                    id={card.id}
                                 /> 
                         ))}
 
@@ -396,6 +398,19 @@ const FoodDisplay = () => {
 
                 </div>
             </div>
+
+            <ToastContainer 
+                position="top-right"
+                autoClose ={2000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
+
         </div>
     )
 }

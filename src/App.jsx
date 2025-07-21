@@ -4,6 +4,7 @@ import Menu from './pages/Menu';
 import Navbar from './components/Navbar';
 import Favorite from './pages/Favorite';
 import Card from './pages/Card';
+import OrderForm from './pages/OrderForm';
 
 function App() {
 
@@ -15,6 +16,7 @@ function App() {
         <Route path='/menu' element={<Menu />} />
         <Route path='/card' element={<Card />} />
         <Route path='/favorite' element={<Favorite />} />
+        <Route path='/orderform' element={<OrderForm />} />
       </Routes>
     </div>
   )

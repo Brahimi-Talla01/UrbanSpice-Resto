@@ -1,9 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { assets } from '../assets/assets/assets';
-import { ShoppingCart, Heart, Search, Moon, Sun, Menu, X, ArrowLeft, Home } from 'lucide-react';
+import { ShoppingCart, Heart, Search, Moon, Sun, Menu, Info, Briefcase, Utensils, Phone, X, ArrowLeft, Home } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
+import { StoreContext } from '../contexts/StoreContext';
+
 const Navbar = () => {
+
+    const { getTotalCart } = useContext(StoreContext);
 
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [inputSearchOpen, setInputSearchOpen] = useState(false);
@@ -18,7 +22,7 @@ const Navbar = () => {
 
     return (
         <>
-            <nav className='w-full px-4 sm:px-8 md:px-16 lg:px-24 max-w-screen-2xl mx-auto flex justify-between items-center h-20'>
+            <nav className='w-full bg-white px-4 sm:px-8 md:px-16 lg:px-24 max-w-screen-2xl mx-auto flex justify-between items-center sticky top-0 z-50 h-20'>
 
                 <div className='w-full flex items-center justify-between relative'>
 
@@ -40,7 +44,13 @@ const Navbar = () => {
                             <Link to='/' onClick={() => setMobileMenuOpen(false)} className='hover:text-light px-2'>Accueil</Link>
                             <li className='cursor-pointer hover:text-light px-2'>À propos</li>
                             <li className='cursor-pointer hover:text-light px-2'>Services</li>
-                            <Link to='/menu' onClick={() => setMobileMenuOpen(false)} className='hover:text-light px-2'>Menu</Link>
+                            <Link
+                                to='/menu' 
+                                onClick={() => setMobileMenuOpen(false)} 
+                                className='hover:text-light px-2'
+                            >
+                                Menu
+                            </Link>
                             <li className='cursor-pointer hover:text-light px-2'>Contact</li>
                         </ul>
                     </nav>
@@ -104,7 +114,7 @@ const Navbar = () => {
                                     <ShoppingCart className="w-6 h-6 cursor-pointer" />
                                 </Link>
                                 <span className="absolute -top-2 -right-1 text-xs bg-background-dark-light text-white rounded-full w-4 h-4 flex items-center justify-center shadow-md">
-                                    1
+                                    {getTotalCart()}
                                 </span>
                             </div>
                             <div className='bg-background-top-light px-2 py-2 rounded-full cursor-pointer'>
@@ -142,10 +152,25 @@ const Navbar = () => {
                                 <Home className='w-5 h-5' />
                                 Accueil
                             </Link>
-                            <li className='cursor-pointer hover:text-light'>À propos</li>
-                            <li className='cursor-pointer hover:text-light'>Services</li>
-                            <Link to='/menu' onClick={() => setMobileMenuOpen(false)} className='hover:text-light'>Menu</Link>
-                            <li className='cursor-pointer hover:text-light'>Contact</li>
+                            <li className='cursor-pointer hover:text-light flex items-center gap-2'>
+                                <Info className='w-5 h-5' />
+                                À propos
+                            </li>
+                            <li className='cursor-pointer hover:text-light flex items-center gap-2'>
+                                <Briefcase className='w-5 h-5' />
+                                Services
+                            </li>
+                            <Link 
+                            to='/menu' 
+                            onClick={() => setMobileMenuOpen(false)} 
+                            className='hover:text-light flex items-center gap-2'>
+                                <Utensils className='w-5 h-5' />
+                                Menu
+                            </Link>
+                            <li className='cursor-pointer hover:text-light flex items-center gap-2'>
+                                <Phone className='w-5 h-5' />
+                                Contact
+                            </li>
                         </ul>
                     </nav>
 
@@ -159,7 +184,7 @@ const Navbar = () => {
                             <div className='relative'>
                                 <ShoppingCart className="w-6 h-6 cursor-pointer text-light" />
                                 <span className="absolute -top-2 -right-1 text-xs bg-background-dark-light text-white rounded-full w-4 h-4 flex items-center justify-center shadow-md">
-                                    1
+                                    {getTotalCart()}
                                 </span>
                             </div>
                         </Link>

@@ -1,8 +1,13 @@
 import { ShoppingCart, Heart } from 'lucide-react';
+import { useContext } from 'react';
+import { StoreContext } from '../contexts/StoreContext';
 
-const FoodList = ({ card }) => {
+const FoodList = ({ card, id }) => {
+
+    const {  addToCart, cartItems } = useContext(StoreContext);
+
     return (
-        <div className='w-full flex items-start flex-col justify-between rounded-lg shadow hover:scale-102 hover:shadow-2xl duration-300 bg-white p-2 group'>
+        <div className='w-full flex items-start flex-col justify-between rounded-lg shadow hover:scale-102 hover:shadow-2xl duration-300 bg-white overflow-hidden p-2 group'>
 
             <div className='w-full h-40 rounded-md overflow-hidden relative'>
                 <img 
@@ -10,9 +15,12 @@ const FoodList = ({ card }) => {
                     alt={card.title}
                     className='w-full h-full object-cover' 
                 />
-                <div className='absolute top-2 left-0 w-full px-2 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out'>
-                    <button className='bg-gray-100 hover:bg-gray-300 rounded-full p-2 transition cursor-pointer z-10'>
-                        <ShoppingCart className='w-6 h-6' />
+                <div className='absolute top-2 left-0 w-full px-2 flex items-center justify-between md:opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out'>
+                    <button 
+                        className={`${cartItems[id] > 0 ? "bg-yellow-500" : "bg-gray-100 hover:bg-gray-300"}   rounded-full p-2 transition cursor-pointer z-10`}
+                        onClick={() => addToCart(id)}
+                    >
+                        <ShoppingCart className={`w-6 h-6 ${cartItems[id] > 0 ? "text-white" : ""}`} />
                     </button>
 
                     <button className='bg-gray-100 hover:bg-gray-300 rounded-full p-2 transition cursor-pointer z-10'>
@@ -34,7 +42,7 @@ const FoodList = ({ card }) => {
             </div>
 
             <div className='w-full flex justify-center my-2'>
-                <button className='bg-background-menu-light px-4 py-1 cursor-pointer text-white hover:bg-yellow-500 transition-colors rounded-full'>Voir les détails</button>
+                <button className='px-8 py-2 bg-yellow-500 text-white font-semibold rounded cursor-pointer hover:bg-yellow-600 transform hover:scale-102 transition-all duration-200 shadow-lg hover:shadow-xl'>Voir les détails</button>
             </div>
         </div>
     )

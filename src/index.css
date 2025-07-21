@@ -49,3 +49,11 @@
     background: yellow !important;
     transform: scale(1.2) !important;
 }
+
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}

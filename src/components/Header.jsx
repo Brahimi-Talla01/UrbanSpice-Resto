@@ -12,7 +12,7 @@ const Header = () => {
     const slides = [assets.slideMain, assets.slideMain2, assets.slideMain3];
 
     return (
-        <header className="relative w-full h-[90vh] overflow-hidden">
+        <header className="relative w-full h-[90vh] 2xl:h-[75vh] overflow-hidden">
             {/* Slider en fond */}
             <div className="absolute inset-0 w-full h-full z-0">
                 <Swiper
