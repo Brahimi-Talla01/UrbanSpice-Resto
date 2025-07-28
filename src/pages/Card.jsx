@@ -1,6 +1,8 @@
 import { useContext } from 'react';
 import { StoreContext } from '../contexts/StoreContext';
 import { useNavigate } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import { ArrowRight } from 'lucide-react';
 
 const Card = () => {
 
@@ -81,8 +83,9 @@ const Card = () => {
                             {/* Quantity Controls */}
                             <div className='flex items-center justify-center bg-gray-50 rounded-xl p-2 gap-3'>
                               <button
-                                onClick={() => removeToCart(item.id)} 
-                                className='w-10 h-10 bg-yellow-500 text-white text-xl font-bold rounded hover:bg-yellow-600 hover:scale-110 transition-all duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-yellow-300'
+                                onClick={() => removeToCart(item.id)}
+                                disabled={cartItems[item.id] <= 1}
+                                className='w-10 h-10 bg-yellow-500 cursor-pointer text-white text-xl font-bold rounded hover:bg-yellow-600 hover:scale-110 transition-all duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-yellow-300'
                               >
                                 -
                               </button>
@@ -93,7 +96,7 @@ const Card = () => {
                               
                               <button 
                                 onClick={() => addToCart(item.id)} 
-                                className='w-10 h-10 bg-yellow-500 text-white text-xl font-bold rounded hover:bg-yellow-600 hover:scale-110 transition-all duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-yellow-300'
+                                className='w-10 h-10 bg-yellow-500 cursor-pointer text-white text-xl font-bold rounded hover:bg-yellow-600 hover:scale-110 transition-all duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-yellow-300'
                               >
                                 +
                               </button>
@@ -102,7 +105,7 @@ const Card = () => {
                             {/* Remove Button */}
                             <button
                               onClick={() => removeAllToCart(item.id)}
-                              className='px-6 py-2.5 text-sm bg-yellow-500 text-white font-semibold rounded hover:bg-yellow-600 hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-yellow-300 flex items-center justify-center gap-2'>
+                              className='px-6 py-2.5 text-sm cursor-pointer bg-yellow-500 text-white font-semibold rounded hover:bg-yellow-600 hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-yellow-300 flex items-center justify-center gap-2'>
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                               </svg>
@@ -171,14 +174,15 @@ const Card = () => {
               <button
                 onClick={() => navigate('/orderform')} 
                 type='button' 
-                className='w-full mb-6 py-3 px-6 bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-600 hover:to-amber-600 text-white font-bold text-lg rounded shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-yellow-200 relative overflow-hidden group'
+                className='w-full mb-6 py-3 px-6 cursor-pointer bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-600 hover:to-amber-600 text-white font-bold text-lg rounded shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-yellow-200 relative overflow-hidden group'
               >
                 <div className='absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300'></div>
-                <span className='relative flex items-center justify-center gap-3'>
+                <span className='relative flex items-center justify-center text-sm gap-2'>
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                   </svg>
                   Valider la commande
+                  <ArrowRight className='w-4 h-4 animate-ping' />
                 </span>
               </button>
 
@@ -207,6 +211,18 @@ const Card = () => {
           </div>
         </div>
       </div>
+
+      <ToastContainer 
+        position="top-right"
+        autoClose ={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </div>
   );
 };

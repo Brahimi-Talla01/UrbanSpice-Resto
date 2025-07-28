@@ -5,11 +5,14 @@ import Navbar from './components/Navbar';
 import Favorite from './pages/Favorite';
 import Card from './pages/Card';
 import OrderForm from './pages/OrderForm';
+import CardDescription from './pages/CardDescription';
+import ScrollToTop from './components/ScrollToTop';
 
 function App() {
 
   return (
     <div>
+      <ScrollToTop />
       <Navbar />
       <Routes>
         <Route path='/' element={<Home />} />
@@ -17,6 +20,7 @@ function App() {
         <Route path='/card' element={<Card />} />
         <Route path='/favorite' element={<Favorite />} />
         <Route path='/orderform' element={<OrderForm />} />
+        <Route path='/card-description/:id' element={<CardDescription />} />
       </Routes>
     </div>
   )

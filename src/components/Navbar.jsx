@@ -7,7 +7,7 @@ import { StoreContext } from '../contexts/StoreContext';
 
 const Navbar = () => {
 
-    const { getTotalCart } = useContext(StoreContext);
+    const { getTotalCart, getTotalHeart } = useContext(StoreContext);
 
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [inputSearchOpen, setInputSearchOpen] = useState(false);
@@ -106,7 +106,7 @@ const Navbar = () => {
                                     <Heart className="w-6 h-6 cursor-pointer" />
                                 </Link>
                                 <span className="absolute -top-2 -right-1 text-xs bg-background-dark-light text-white rounded-full w-4 h-4 flex items-center justify-center shadow-md">
-                                    3
+                                    {getTotalHeart()}
                                 </span>
                             </div>
                             <div className='relative p-1 hover:bg-gray-100 rounded-md transition'>
@@ -197,7 +197,7 @@ const Navbar = () => {
                             <div className='relative'>
                                 <Heart className="w-6 h-6 cursor-pointer text-light" />
                                 <span className="absolute -top-2 -right-1 text-xs bg-background-dark-light text-white rounded-full w-4 h-4 flex items-center justify-center shadow-md">
-                                    6
+                                    {getTotalHeart()}
                                 </span>
                             </div>
                         </Link>

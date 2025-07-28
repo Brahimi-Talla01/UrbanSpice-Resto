@@ -3,44 +3,90 @@ import { card_menu } from "../assets/assets/assets";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-
 export const StoreContext = createContext(null);
 
 const StoreContextProvider = (props) => {
-
     const [cartItems, setCartItems] = useState({});
+    const [heartItems, setHeartItems] = useState({});
+    const [isAddedToCart, setIsAddedToCart] = useState(false);
 
     const addToCart = (itemId) => {
+        // Trouver l'item dans le menu
+        const item = card_menu.find(cart => cart.id === itemId);
+        
         if (!cartItems[itemId]) {
             setCartItems((prev) => ({...prev, [itemId]: 1}));
+            setIsAddedToCart(true);
+        } else {
+            setCartItems((prev) => ({...prev, [itemId]: prev[itemId] + 1}));
         }
-        else{
-            setCartItems((prev) => ({...prev, [itemId]: prev[itemId] + 1}))
+        
+        if (item) {
+            toast.success(`${item.title} a bien été ajouté au panier`);
         }
-        toast.success(`${card_menu[itemId - 1].title} A bien été ajouté au panier`);
+        
+        setTimeout(() => setIsAddedToCart(false), 2000);
+    }
+
+    const addToHeart = (itemId) => {
+        const item = card_menu.find(cart => cart.id === itemId);
+        
+        if (!heartItems[itemId]) {
+            setHeartItems((prev) => ({...prev, [itemId]: 1}));
+            if (item) {
+                toast.success(`${item.title} a bien été ajouté aux favoris`);
+            }
+        }
     }
 
     const removeToCart = (itemId) => {
-        if (cartItems[itemId] >= 2) {
+        if (cartItems[itemId] && cartItems[itemId] >= 2) {
             setCartItems((prev) => ({...prev, [itemId]: prev[itemId] - 1}));
+        } else if (cartItems[itemId] === 1) {
+            setCartItems((prev) => {
+                const updatedCart = { ...prev };
+                delete updatedCart[itemId];
+                return updatedCart;
+            });
+        }
+    }
+
+    const removeToHeart = (itemId) => {
+        const item = card_menu.find(cart => cart.id === itemId);
+        
+        setHeartItems((prev) => {
+            const updatedHeart = { ...prev };
+            delete updatedHeart[itemId];
+            return updatedHeart;
+        });
+        
+        if (item) {
+            toast.info(`${item.title} a bien été retiré des favoris`);
         }
     }
 
     const removeAllToCart = (itemId) => {
+        const item = card_menu.find(cart => cart.id === itemId);
+        
         setCartItems((prev) => {
             const updatedCart = { ...prev };
             delete updatedCart[itemId];
             return updatedCart;
         });
-        toast.info(`${card_menu[itemId].title} A bien été retiré au panier`);
+        
+        if (item) {
+            toast.info(`${item.title} a bien été retiré du panier`);
+        }
     };
-
 
     const getTotalAmount = () => {
         let totalAmount = 0;
-        for (const item in cartItems) {
-            let itemCart = card_menu.find((cart) => cart.id === item);
-            totalAmount += (itemCart.price).split(' ')[0] * cartItems[item];
+        for (const itemId in cartItems) {
+            let itemCart = card_menu.find((cart) => cart.id === itemId);
+            if (itemCart) {
+                const price = parseFloat(itemCart.price.split(' ')[0]);
+                totalAmount += price * cartItems[itemId];
+            }
         }
         return totalAmount;
     }
@@ -53,8 +99,16 @@ const StoreContextProvider = (props) => {
         return totalCart;
     }
 
+    const getTotalHeart = () => {
+        let totalheart = 0;
+        for (const item in heartItems) {
+           totalheart += heartItems[item];
+        }
+        return totalheart;
+    }
+
     useEffect(() => {
-        console.log(cartItems);
+        console.log('Cart Items:', cartItems);
     }, [cartItems]);
 
     const contextValue = {
@@ -64,8 +118,13 @@ const StoreContextProvider = (props) => {
         getTotalAmount,
         getTotalCart,
         removeAllToCart,
+        addToHeart,
+        removeToHeart,
+        getTotalHeart,
         card_menu,
         cartItems,
+        heartItems,
+        isAddedToCart,
     }
 
     return (
