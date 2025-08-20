@@ -8,7 +8,7 @@ import 'swiper/css/pagination';
 import 'swiper/css/effect-fade';
 import { ArrowDown } from 'lucide-react';
 
-const Header = () => {
+const Header = ({ onScrollToMenu }) => {
 
     const slides = [assets.slideMain, assets.slideMain2, assets.slideMain3];
 
@@ -49,7 +49,10 @@ const Header = () => {
                 <p className="text-white text-base font-open md:text-lg max-w-2xl">
                     Chaque plat est une invitation au voyage gustatif, préparé avec passion et des ingrédients de qualité.
                 </p>
-                <button className="flex items-center justify-center gap-3 md:w-1/3 py-4 rounded-full cursor-pointer font-bold text-lg transition-all duration-300 focus:outline-none focus:ring-4 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-1 focus:ring-yellow-300">
+                <button
+                    onClick={onScrollToMenu} 
+                    className="flex items-center justify-center gap-3 md:w-1/3 py-4 rounded-full cursor-pointer font-bold text-lg transition-all duration-300 focus:outline-none focus:ring-4 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-1 focus:ring-yellow-300"
+                >
                     Commander Maintenant
                     <ArrowDown className='w-6 h-6 animate-bounce' />
                 </button>

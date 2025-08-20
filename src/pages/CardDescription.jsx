@@ -3,6 +3,7 @@ import FoodList from '../components/FoodList';
 import { useParams, useNavigate } from 'react-router-dom';
 import { StoreContext } from '../contexts/StoreContext';
 import { ToastContainer } from 'react-toastify';
+import ScrollToTopButton from '../components/SrollToTopButton';
 
 const CardDescription = () => {
     const { addToCart, removeToCart, card_menu, cartItems } = useContext(StoreContext);
@@ -149,6 +150,9 @@ const CardDescription = () => {
                         ))}
                 </div>
             </section>
+
+            {/* Navigate to top */}
+            <ScrollToTopButton />
 
             <ToastContainer 
                 position="top-right"

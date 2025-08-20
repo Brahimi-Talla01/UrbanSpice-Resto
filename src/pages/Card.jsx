@@ -173,6 +173,7 @@ const Card = () => {
               {/* Checkout Button */}
               <button
                 onClick={() => navigate('/orderform')} 
+                disabled={getTotalAmount() === 0}
                 type='button' 
                 className='w-full mb-6 py-3 px-6 cursor-pointer bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-600 hover:to-amber-600 text-white font-bold text-lg rounded shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-yellow-200 relative overflow-hidden group'
               >

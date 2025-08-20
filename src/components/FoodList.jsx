@@ -54,7 +54,7 @@ const FoodList = ({ card, id }) => {
             <div className='w-full flex justify-center my-2'>
                 <button 
                     onClick={handleClick} 
-                    className='px-8 py-2 bg-yellow-500 text-white font-semibold rounded cursor-pointer hover:bg-yellow-600 transform hover:scale-102 transition-all duration-200 shadow-lg hover:shadow-xl'
+                    className='px-8 py-2 bg-gradient-to-r from-yellow-500 to-orange-400 hover:from-yellow-600 hover:to-orange-400 text-white font-semibold rounded cursor-pointer hover:bg-yellow-600 transform hover:scale-102 transition-all duration-200 shadow-lg hover:shadow-xl'
                 >
                     Voir les détails
                 </button>

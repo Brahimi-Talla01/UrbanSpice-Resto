@@ -65,6 +65,18 @@ import petdej2 from './petitdej2.jpeg';
 import saine1 from './saine1.jpeg';
 import saine2 from './saine2.png';
 
+// Chefs
+import chef1 from './chef1.jpeg';
+import chef2 from './chef2.jpeg';
+import chef3 from './chef3.jpeg';
+
+// Séjour
+import sejour from './sejour.jpeg';
+import urbanSpice from './urban.jpeg';
+import zdeveloper from './Zdevelopper.jpeg';
+
+
+
 export const assets = {
     slideMain,
     slideMain2,
@@ -98,6 +110,8 @@ export const assets = {
     card5,
 
     filter_icon,
+    sejour,
+    urbanSpice,
 }
 
 export const service_data =[
@@ -344,20 +358,20 @@ export const card_menu = [
 
 export const prof_data = [
     {
-        "image": "https://example.com/images/chef_ramsey.jpg",
-        "name": "Gordon Ramsay",
+        "image": chef3,
+        "name": "Dieuveil Malonga",
         "post": "Chef Cuisinier Renommé",
-        "description": "Célèbre chef britannique, restaurateur et personnalité de la télévision, connu pour ses émissions culinaires et ses restaurants étoilés Michelin à travers le monde."
+        "description": "Célèbre chef Camerounais, restaurateur et personnalité de la télévision, connu pour ses émissions culinaires et ses restaurants étoilés Michelin à travers le monde."
     },
     {
-        "image": "https://example.com/images/sommelier_dupont.jpg",
-        "name": "Isabelle Dupont",
+        "image": chef1,
+        "name": "Georgiana Viou",
         "post": "Sommelière Experte",
         "description": "Sommelière passionnée et reconnue pour sa connaissance approfondie des vins, capable de sublimer chaque plat par des accords mets-vins parfaits."
     },
     {
-        "image": "https://example.com/images/boulanger_martin.jpg",
-        "name": "Jean-Pierre Martin",
+        "image": chef2,
+        "name": "Mory Sacko",
         "post": "Maître Boulanger-Pâtissier",
         "description": "Artisan boulanger-pâtissier dévoué, perpétuant les traditions de la boulangerie française avec des créations gourmandes et des pains artisanaux exceptionnels."
     }
@@ -372,8 +386,8 @@ export const testimonie_data = [
     },
     {
         "description": "Le service est impécable! Le personnel est attentionné, souriant et trés professionnel, On se sent vraiment choyé.",
-        "image": test1,
-        "name": "Lesly",
+        "image": zdeveloper,
+        "name": "Lesley",
         "profession": "Entrepreneur",
     },
     {

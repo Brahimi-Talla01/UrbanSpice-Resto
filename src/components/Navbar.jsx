@@ -1,13 +1,13 @@
 import { useContext, useEffect, useState } from 'react';
 import { assets } from '../assets/assets/assets';
-import { ShoppingCart, Heart, Search, Moon, Sun, Menu, Info, Briefcase, Utensils, Phone, X, ArrowLeft, Home } from 'lucide-react';
+import { ShoppingCart, Heart, Search, Moon, Sun, Menu, Info, Briefcase, Utensils, Phone, X, ArrowLeft, Home, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 import { StoreContext } from '../contexts/StoreContext';
 
 const Navbar = () => {
 
-    const { getTotalCart, getTotalHeart } = useContext(StoreContext);
+    const { getTotalCart, getTotalHeart, setIsShowLogin } = useContext(StoreContext);
 
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [inputSearchOpen, setInputSearchOpen] = useState(false);
@@ -22,7 +22,7 @@ const Navbar = () => {
 
     return (
         <>
-            <nav className='w-full bg-white px-4 sm:px-8 md:px-16 lg:px-24 max-w-screen-2xl mx-auto flex justify-between items-center sticky top-0 z-50 h-20'>
+            <nav className='w-full bg-white px-4 sm:px-8 md:px-16 lg:px-24 mx-auto flex justify-between items-center sticky top-0 z-50 h-20'>
 
                 <div className='w-full flex items-center justify-between relative'>
 
@@ -45,11 +45,11 @@ const Navbar = () => {
                             <li className='cursor-pointer hover:text-light px-2'>À propos</li>
                             <li className='cursor-pointer hover:text-light px-2'>Services</li>
                             <Link
-                                to='/menu' 
+                                to='/faqs' 
                                 onClick={() => setMobileMenuOpen(false)} 
                                 className='hover:text-light px-2'
                             >
-                                Menu
+                                FAQs
                             </Link>
                             <li className='cursor-pointer hover:text-light px-2'>Contact</li>
                         </ul>
@@ -61,7 +61,7 @@ const Navbar = () => {
                             className="cursor-pointer p-1 hover:bg-gray-100 rounded-md transition"
                             onClick={() => setInputSearchOpen(true)}
                         >
-                            <Search className="w-6 h-6 text-light dark:text-white" />
+                            <Search className="w-6 h-6 text-light" />
                         </button>
 
                         {inputSearchOpen && (
@@ -94,6 +94,16 @@ const Navbar = () => {
                             </form>
                         )}
 
+                        {/* Login icon (Mobile) */}
+                        <div className='md:hidden'>
+                            <button 
+                                onClick={() => setIsShowLogin(true)} 
+                                className='bg-background-top-light px-2 py-2 rounded-full cursor-pointer'
+                            >
+                                <User className="hover:text-yellow-400" />
+                            </button>
+                        </div>
+
                         {inputSearchOpen && (
                             <div onClick={() => setInputSearchOpen(false)} className="fixed hidden md:flex inset-0 bg-gray-500/80 bg-opacity-50 z-45"></div>
                         )}
@@ -117,9 +127,12 @@ const Navbar = () => {
                                     {getTotalCart()}
                                 </span>
                             </div>
-                            <div className='bg-background-top-light px-2 py-2 rounded-full cursor-pointer'>
-                                <Moon className="hover:text-yellow-400" />
-                            </div>
+                            <button 
+                                onClick={() => setIsShowLogin(true)} 
+                                className='bg-background-top-light px-2 py-2 rounded-full cursor-pointer'
+                            >
+                                <User className="hover:text-yellow-400" />
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -161,11 +174,11 @@ const Navbar = () => {
                                 Services
                             </li>
                             <Link 
-                            to='/menu' 
+                            to='/faqs' 
                             onClick={() => setMobileMenuOpen(false)} 
                             className='hover:text-light flex items-center gap-2'>
                                 <Utensils className='w-5 h-5' />
-                                Menu
+                                FAQs
                             </Link>
                             <li className='cursor-pointer hover:text-light flex items-center gap-2'>
                                 <Phone className='w-5 h-5' />
@@ -203,12 +216,15 @@ const Navbar = () => {
                         </Link>
                     </div>
 
-                    <div className='flex items-center gap-2 border-t border-gray-200 mt-2 w-full p-4'>
-                        <p>Mode clair</p>
-                        <div className='bg-gray-200 px-2 py-2 rounded-full hover:text-yellow-400 cursor-pointer'>
-                            <Moon className="hover:text-yellow-400" />
-                        </div>
-                    </div>
+                    {/* <div className='flex items-center gap-2 border-t border-gray-200 mt-2 w-full p-4'>
+                        <p>Connexion</p>
+                        <button 
+                            onClick={() => setIsShowLogin(true)} 
+                            className='bg-background-top-light px-2 py-2 rounded-full cursor-pointer'
+                        >
+                            <User className="hover:text-yellow-400" />
+                        </button>
+                    </div> */}
                 </div>
 
                 {/* Overlay when menu is open (optional) */}
