@@ -22,7 +22,7 @@ const Navbar = () => {
 
     return (
         <>
-            <nav className='w-full bg-white px-4 sm:px-8 md:px-16 lg:px-24 2xl:px-32 mx-auto flex justify-between items-center sticky top-0 z-50 h-20'>
+            <nav className='w-full bg-white px-4 sm:px-8 md:px-16 lg:px-24 2xl:px-36 mx-auto flex justify-between items-center sticky top-0 z-50 h-20'>
 
                 <div className='w-full flex items-center justify-between relative'>
 

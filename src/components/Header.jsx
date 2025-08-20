@@ -42,7 +42,7 @@ const Header = ({ onScrollToMenu }) => {
             <div className="absolute inset-0 bg-black/50 z-10"></div>
 
             {/* Texte fixe par-dessus */}
-            <div className="absolute inset-0 z-20 flex flex-col justify-center px-4 md:px-8 lg:px-24 max-w-screen-2xl space-y-4">
+            <div className="absolute inset-0 z-20 flex flex-col justify-center px-4 md:px-8 lg:px-24 2xl:px-36 max-w-screen-2xl space-y-4">
                 <h1 className="text-white text-3xl sm:text-4xl md:text-5xl font-bold font-outfit max-w-3xl leading-snug">
                     Faites une pause gourmande et découvrez nos créations culinaires inspirantes.
                 </h1>
