@@ -22,7 +22,7 @@ const Login = ({ onClose, isShowLogin }) => {
 
     return (
         <div 
-            className='fixed inset-0 flex items-center justify-center bg-black/40 z-50'
+            className='fixed inset-0 flex items-center justify-center bg-black/40 z-50 mt-20'
             // onClick={onClose}
         >
             <div className={`relative w-full mx-2 p-6 bg-white border border-yellow-500 shadow-xl rounded-lg ${currState === "Se connecter" ? "max-w-sm" : "max-w-lg"}`}>

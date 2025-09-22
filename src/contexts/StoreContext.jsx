@@ -12,7 +12,7 @@ const StoreContextProvider = (props) => {
     const [isShowLogin, setIsShowLogin] = useState(false);
 
 
-    const faqData = [
+    const FaqData = [
         {
             question: "Quels sont vos horaires d'ouverture ?",
             answer: "Nous sommes ouverts tous les jours de 11h à 23h, y compris les week-ends et jours fériés."
@@ -164,7 +164,7 @@ const StoreContextProvider = (props) => {
         cartItems,
         heartItems,
         isAddedToCart,
-        faqData,
+        FaqData,
         isShowLogin,
     }
 

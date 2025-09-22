@@ -165,10 +165,10 @@ const Navbar = () => {
                                 <Home className='w-5 h-5' />
                                 Accueil
                             </Link>
-                            <li className='cursor-pointer hover:text-light flex items-center gap-2'>
+                            <a href='#about' className='cursor-pointer hover:text-light flex items-center gap-2'>
                                 <Info className='w-5 h-5' />
                                 À propos
-                            </li>
+                            </a>
                             <li className='cursor-pointer hover:text-light flex items-center gap-2'>
                                 <Briefcase className='w-5 h-5' />
                                 Services

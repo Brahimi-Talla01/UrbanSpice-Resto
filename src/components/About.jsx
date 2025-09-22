@@ -2,7 +2,7 @@ import { assets } from '../assets/assets/assets';
 
 const About = () => {
     return (
-        <div className='bg-background-top-light w-full my-4 md:my-8 py-4 md:pt-8 md:pb-12'>
+        <div id='about' className='bg-background-top-light w-full my-4 md:my-8 py-4 md:pt-8 md:pb-12'>
             <h1 className='text-xl md:text-4xl font-semibold text-light text-center pb-8 font-outfit'>Qui sommes-nous ?</h1>
 
             <div className='grid grid-cols-1 md:grid-cols-2 gap-4 px-4 sm:px-8 md:px-16 lg:px-24 max-w-screen-2xl mx-auto overflow-hidden'>

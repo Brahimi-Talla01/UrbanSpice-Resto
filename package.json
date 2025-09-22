@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -16,6 +16,7 @@
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.6.3",
     "react-toastify": "^11.0.5",
+    "recharts": "^3.2.1",
     "swiper": "^11.2.10",
     "tailwindcss": "^4.1.11"
   },
