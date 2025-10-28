@@ -4,7 +4,6 @@ import Favorite from './pages/Favorite';
 import Card from './pages/Card';
 import OrderForm from './pages/OrderForm';
 import CardDescription from './pages/CardDescription';
-import Faqs from './pages/Faqs';
 import Login from './components/Login';
 import { useContext } from 'react';
 import { StoreContext } from './contexts/StoreContext';
@@ -29,7 +28,6 @@ function App() {
       {isShowLogin && <Login onClose={() =>setIsShowLogin(false)} isShowLogin={isShowLogin} />}
       <Routes>
         <Route path='/' element={<MainLayout><Home /></MainLayout>} />
-        <Route path='/faqs' element={<MainLayout><Faqs /></MainLayout>} />
         <Route path='/card' element={<MainLayout><Card /></MainLayout>} />
         <Route path='/favorite' element={<MainLayout><Favorite /></MainLayout>} />
         <Route path='/orderform' element={<MainLayout><OrderForm /></MainLayout>} />

@@ -105,7 +105,7 @@ const AddMenuForm = () => {
                         onClick={closeForm}
                         className='text-gray-400 hover:text-yellow-500 transition duration-300 cursor-pointer text-2xl sm:text-3xl font-light'
                     >
-                        ×
+                        &times;
                     </button>
                 </div>
 
@@ -161,6 +161,10 @@ const AddMenuForm = () => {
                                     <option value="Dîner">Dîner</option>
                                     <option value="Boissons">Boissons</option>
                                     <option value="Desserts">Desserts</option>
+                                    <option value="Desserts">Cuisine saine</option>
+                                    <option value="Desserts">Plats principaux</option>
+                                    <option value="Desserts">Cuisine locale</option>
+                                    <option value="Desserts">Cuisine occidentale</option>
                                 </select>
                             </div>
 

@@ -1,77 +1,78 @@
 import { Trash2, Pencil, CheckCircle2, CircleOff } from "lucide-react";
 
-const MenuTableItem = ({ menu, fetchMenu, togglePublish, deleteMenu, onEdit }) => {
+const ChefTableItem = ({ chef, toggleChef, archiveChef, onEdit }) => {
 
     const handleDelete = () => {
-        console.log("Supprimer menu:", menu.id);
+        console.log("Supprimer un service:", chef.id);
         // TODO: requête API + fetchMenu()
     };
 
     const handleTogglePublish = () => {
-        console.log("Changer le status:", menu.id);
+        console.log("Changer le status:", chef.id);
         // TODO: API (toggle publish) + fetchMenu()
     };
 
     return (
         <tr className="border-b border-gray-200 hover:bg-gray-50">
             
+            {/* Numéro */}
+            <td className="px-6 py-4 font-medium text-gray-800">
+                {chef.id}
+            </td>
+
             {/* Image */}
             <td className="px-6 py-4">
                 <img 
-                    src={menu.image_url} 
-                    alt={menu.title} 
+                    src={chef.image_url} 
+                    alt={chef.title} 
                     className="w-12 h-12 object-cover rounded-md shadow-sm"
                 />
             </td>
-
-            {/* Nom */}
+            
+            {/* Nom du chef */}
             <td className="px-6 py-4 font-medium text-gray-800">
-                {menu.title}
+                {chef.name}
             </td>
 
-            {/* Catégorie */}
+            {/* Poste du chef */}
+            <td className="px-6 py-4 font-medium text-gray-800">
+                {chef.post}
+            </td>
+
+            {/*A propos du chef*/}
+            <td className="px-6 py-4 font-medium text-sm text-gray-500">
+                {(chef.description).split(" ").slice(0, 2).join(" ")}...
+            </td>
+
+
+            {/* Date de creation du service */}
             <td className="px-6 py-4 text-gray-600">
-                {menu.category || "N/A"}
-            </td>
-
-            {/* Prix */}
-            <td className="px-6 py-4 font-semibold text-gray-900">
-                <p className="flex items-center gap-1">
-                    <span>{menu.price}</span>  
-                    {menu.currency}
-                </p>
+                {chef.created_at || "N/A"}
             </td>
 
             {/* Status */}
             <td className="px-6 py-4">
-                {menu.is_published ? (
-                    <span className="text-xs border border-green-600 bg-green-100 text-green-600 rounded-full px-3 py-1">
-                        Publié
+                {chef.is_actived ? (
+                    <span className="text-xs bg-green-100 text-green-600 rounded-full px-3 py-2">
+                        Activé
                     </span>
                 ) : (
-                    <span className="text-xs border border-red-600 bg-red-100 text-red-600 rounded-full px-3 py-1">
-                        Non publié
+                    <span className="text-xs bg-gray-100 text-gray-800 rounded-full px-3 py-2">
+                        Non activé
                     </span>
                 )}
-            </td>
-
-            {/* Date de création */}
-            <td className="px-6 py-4 text-gray-500 max-sm:hidden">
-                {menu.created_at 
-                ? new Date(menu.created_at).toLocaleDateString() 
-                : "--"}
             </td>
 
             {/* Actions */}
             <td className="px-6 py-4">
                 <div className="flex items-center justify-between w-full">
                     <button 
-                        onClick={() => togglePublish(menu.id)} 
+                        onClick={() => toggleChef(chef.id)} 
                         className="text-blue-500 cursor-pointer hover:scale-110 transition-all"
                     >
-                        {menu.is_published 
-                            ? <div className="flex items-center gap-1"> <span>Dépublié</span> <CircleOff size={18}/> </div> 
-                            : <div className="flex items-center gap-1"> <span>Publié</span> <CheckCircle2 size={18}/> </div> }
+                        {chef.is_actived 
+                            ? <div className="flex items-center gap-1"> <span>Désactivé</span> <CircleOff size={18}/> </div> 
+                            : <div className="flex items-center gap-1"> <span>Activé</span> <CheckCircle2 size={18}/> </div> }
                     </button>
 
                     <button
@@ -82,7 +83,7 @@ const MenuTableItem = ({ menu, fetchMenu, togglePublish, deleteMenu, onEdit }) =
                     </button>
 
                     <button
-                        onClick={() => deleteMenu(menu.id)} 
+                        onClick={() => archiveChef(chef.id)} 
                         className="text-red-500 cursor-pointer hover:scale-110 transition-all"
                     >
                         <Trash2 size={18}/>
@@ -93,4 +94,4 @@ const MenuTableItem = ({ menu, fetchMenu, togglePublish, deleteMenu, onEdit }) =
     );
 };
 
-export default MenuTableItem;
+export default ChefTableItem;

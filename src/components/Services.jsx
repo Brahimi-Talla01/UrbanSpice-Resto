@@ -26,7 +26,7 @@ const Services = () => {
 
 
     return (
-        <div className='w-full md:px-8 lg:px-24 max-w-screen-2xl mx-auto overflow-hidden'>
+        <div id='services' className='w-full px-4 sm:px-8 md:px-16 lg:px-24 2xl:px-36 mx-auto overflow-hidden'>
             <h1 className='text-2xl text-center py-4 md:pt-8 md:text-4xl font-semibold font-outfit'> Nos services</h1>
 
             {/* Desktop */}

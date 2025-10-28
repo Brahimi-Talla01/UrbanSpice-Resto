@@ -396,4 +396,4 @@ export const testimonie_data = [
         "name": "Patrick",
         "profession": "Data scientist",
     }
-]
+];

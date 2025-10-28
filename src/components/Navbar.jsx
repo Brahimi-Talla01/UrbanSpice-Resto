@@ -1,16 +1,25 @@
 import { useContext, useEffect, useState } from 'react';
 import { assets } from '../assets/assets/assets';
-import { ShoppingCart, Heart, Search, Moon, Sun, Menu, Info, Briefcase, Utensils, Phone, X, ArrowLeft, Home, User } from 'lucide-react';
+import { ShoppingCart, Heart, Search, Menu, Info, Briefcase, Utensils, Phone, X, ArrowLeft, Home, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
-
 import { StoreContext } from '../contexts/StoreContext';
 
 const Navbar = () => {
-
     const { getTotalCart, getTotalHeart, setIsShowLogin } = useContext(StoreContext);
 
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [inputSearchOpen, setInputSearchOpen] = useState(false);
+    const [scrolled, setScrolled] = useState(false);
+    const [activeSection, setActiveSection] = useState('home');
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setScrolled(window.scrollY > 20);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     useEffect(() => {
         if (mobileMenuOpen) {
@@ -20,218 +29,294 @@ const Navbar = () => {
         }
     }, [mobileMenuOpen]);
 
+
+    // Fonction pour le smooth scroll
+    const scrollToSection = (href) => {
+        const sectionId = href.replace('#', '');
+        const element = document.getElementById(sectionId);
+        if (element) {
+                const offsetTop = element.offsetTop - 80;
+                window.scrollTo({
+                    top: offsetTop,
+                    behavior: 'smooth'
+                });
+        }
+        setIsOpenMenu(false); 
+    };
+
+    useEffect(() => {
+        const handleScroll = () => {
+                const sections = ['home', 'about', 'services', 'contact', 'faqs'];
+                const scrollPosition = window.scrollY + 100;
+
+                for (const section of sections) {
+                    const element = document.getElementById(section);
+                    if (element) {
+                    const { offsetTop, offsetHeight } = element;
+                            if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
+                                setActiveSection(section);
+                                break;
+                            }
+                    }
+                }
+        };
+
+        window.addEventListener('scroll', handleScroll);
+
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+
+    const navItems = [
+        { name: 'Accueil', href: '#home' },
+        { name: 'Services', href: '#services'},
+        { name: 'A propos', href: '#about' },
+        { name: 'Contact', href: '#contact' },
+        { name: 'Faqs', href: '#faqs' },
+    ];
+
     return (
         <>
-            <nav className='w-full bg-white px-4 sm:px-8 md:px-16 lg:px-24 2xl:px-36 mx-auto flex justify-between items-center sticky top-0 z-50 h-20'>
-
+            {/* Navbar principale */}
+            <nav className={`w-full px-4 sm:px-8 md:px-16 lg:px-24 2xl:px-36 mx-auto flex justify-between items-center sticky top-0 z-50 h-20 transition-all duration-300 ${
+                scrolled 
+                    ? 'bg-white/90 backdrop-blur-md shadow-lg border-b border-gray-100' 
+                    : 'bg-white shadow-sm'
+            }`}>
+                
                 <div className='w-full flex items-center justify-between relative'>
 
-                    {/* Left: Menu icon (mobile) */}
-                    <div className='md:hidden'>
-                        <Menu className='w-6 h-6 cursor-pointer' onClick={() => setMobileMenuOpen(true)} />
-                    </div>
-
-                    {/* Center: Logo */}
-                    <Link to='/' className='flex items-center gap-2 cursor-pointer'>
-                        <img className='w-6 md:w-8 h-6 md:h-8' src={assets.logo} alt="Logo" />
-                        <h1 className='text-xl md:text-2xl font-semibold font-outfit'>
-                            Urban<span className='text-light'>Spice</span>
+                    {/* Logo */}
+                    <Link to='/' className='group flex items-center gap-3 cursor-pointer'>
+                        <div className="relative">
+                            <img className='w-6 md:w-8 h-6 md:h-8' src={assets.logo} alt="Logo" />
+                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-400 rounded-full animate-pulse"></div>
+                        </div>
+                        <h1 className='text-2xl font-bold text-background-dark-light group-hover:text-yellow-400 transition-colors duration-300'>
+                            Urban<span className='text-yellow-400 group-hover:text-background-dark-light'>Spice</span>
                         </h1>
-                    </Link>
+                    </Link> 
 
-                    <nav className='hidden md:flex'>
-                        <ul className="flex items-center p-4 gap-4 text-lg font-semibold">
-                            <Link to='/' onClick={() => setMobileMenuOpen(false)} className='hover:text-light px-2'>Accueil</Link>
-                            <li className='cursor-pointer hover:text-light px-2'>À propos</li>
-                            <li className='cursor-pointer hover:text-light px-2'>Services</li>
-                            <Link
-                                to='/faqs' 
-                                onClick={() => setMobileMenuOpen(false)} 
-                                className='hover:text-light px-2'
-                            >
-                                FAQs
-                            </Link>
-                            <li className='cursor-pointer hover:text-light px-2'>Contact</li>
+                    {/* Navigation centrale - Desktop */}
+                    <nav className='hidden lg:flex'>
+                        <ul className="flex items-center gap-8">
+                            {navItems.map((item, index) => {
+
+                                const sectionId = item.href.replace('#', '');
+                                const isActive = activeSection === sectionId;
+                                return (
+                                    <li key={index}>
+                                        <button
+                                            onClick={() => scrollToSection(item.href)} 
+                                            className={`relative px-4 py-2 text-base font-medium cursor-pointer transition-all duration-300 hover:text-yellow-500 ${
+                                                isActive 
+                                                    ? 'text-yellow-500' 
+                                                    : 'text-gray-700 hover:text-yellow-500'
+                                            }`}
+                                        >
+                                            {item.name}
+                                            {isActive && (
+                                                <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-orange-500 rounded-full"></span>
+                                            )}
+                                            <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full"></span>
+                                        </button>
+                                    </li>
+                                )
+                            })}
                         </ul>
                     </nav>
 
-                    {/* Right: Search (mobile) + full icons (desktop) */}
-                    <div className="flex items-center gap-4 text-light text-xl">
+                    {/* Actions à droite */}
+                    <div className="flex items-center gap-3">
+                        
+                        {/* Bouton de recherche */}
                         <button
-                            className="cursor-pointer p-1 hover:bg-gray-100 rounded-md transition"
+                            className="p-2.5 hover:bg-gray-100 rounded-full cursor-pointer transition-colors duration-300"
                             onClick={() => setInputSearchOpen(true)}
                         >
-                            <Search className="w-6 h-6 text-light" />
+                            <Search className="w-5 h-5 text-gray-600" />
                         </button>
 
-                        {inputSearchOpen && (
-                            <form
-                                className={`fixed top-0 left-1/2 transform -translate-x-1/2 w-full md:max-w-4xl md:rounded-md px-4 py-2 flex items-center gap-2 bg-background-menu-dark text-background-top-light shadow-md z-50 transition-transform duration-300 ${
-                                    inputSearchOpen ? 'translate-y-0' : '-translate-y-10'
-                                }`}
-                            >
-
-                                <button
-                                    type="button"
-                                    onClick={() => setInputSearchOpen(false)}
-                                    className="p-2 rounded-full hover:bg-white/10 transition"
-                                >
-                                    <ArrowLeft className="w-6 h-6 text-background-top-light" />
-                                </button>
-
-                                <input
-                                    type="search"
-                                    placeholder="Rechercher un menu..."
-                                    className="flex-1 px-4 py-1 md:py-2 rounded-md bg-background-top-light text-background-menu-dark placeholder:text-gray-500 border-none focus:outline-none"
-                                />
-
-                                <button
-                                    type="submit"
-                                    className="p-2 rounded-md bg-background-top-light hover:bg-white text-background-menu-dark transition cursor-pointer"
-                                >
-                                    <Search className="w-5 h-5 md:w-6 md:h-6" />
-                                </button>
-                            </form>
-                        )}
-
-                        {/* Login icon (Mobile) */}
-                        <div className='md:hidden'>
-                            <button 
-                                onClick={() => setIsShowLogin(true)} 
-                                className='bg-background-top-light px-2 py-2 rounded-full cursor-pointer'
-                            >
-                                <User className="hover:text-yellow-400" />
-                            </button>
-                        </div>
-
-                        {inputSearchOpen && (
-                            <div onClick={() => setInputSearchOpen(false)} className="fixed hidden md:flex inset-0 bg-gray-500/80 bg-opacity-50 z-45"></div>
-                        )}
-
-
-                        {/* Desktop icons */}
-                        <div className='hidden md:flex items-center gap-4'>
-                            <div className='relative p-1 hover:bg-gray-100 rounded-md transition'>
-                                <Link to='/favorite'>
-                                    <Heart className="w-6 h-6 cursor-pointer" />
-                                </Link>
-                                <span className="absolute -top-2 -right-1 text-xs bg-background-dark-light text-white rounded-full w-4 h-4 flex items-center justify-center shadow-md">
-                                    {getTotalHeart()}
-                                </span>
-                            </div>
-                            <div className='relative p-1 hover:bg-gray-100 rounded-md transition'>
-                                <Link to='/card'>                    
-                                    <ShoppingCart className="w-6 h-6 cursor-pointer" />
-                                </Link>
-                                <span className="absolute -top-2 -right-1 text-xs bg-background-dark-light text-white rounded-full w-4 h-4 flex items-center justify-center shadow-md">
-                                    {getTotalCart()}
-                                </span>
-                            </div>
-                            <button 
-                                onClick={() => setIsShowLogin(true)} 
-                                className='bg-background-top-light px-2 py-2 rounded-full cursor-pointer'
-                            >
-                                <User className="hover:text-yellow-400" />
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Mobile sliding menu */}
-                <div className={`fixed top-0 left-0 h-full w-3/4 bg-background-top-light shadow-md transform transition-transform duration-300 z-50 ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-                    <div className="flex justify-between items-center p-4 border-b border-gray-200">
-                        <div className='p-0.5 rounded bg-gray-200 '>
-                            <X className="cursor-pointer" onClick={() => setMobileMenuOpen(false)} />
-                        </div>
-                        <Link 
-                            to='/' 
-                            className='flex items-center gap-1 cursor-pointer'
-                            onClick={() => setMobileMenuOpen(false)}
-                        >
-                            <img className='w-4 h-4' src={assets.logo} alt="Logo" />
-                            <h1 className='text-[16px] font-semibold font-outfit'>
-                                Urban<span className='text-light'>Spice</span>
-                            </h1>
-                        </Link>
-                    </div>
-
-                    <nav>
-                        <ul className="flex flex-col p-4 gap-4 text-lg">
-                            <Link 
-                                to='/' 
-                                onClick={() => setMobileMenuOpen(false)} 
-                                className='hover:text-light flex gap-2 items-center'
-                            >
-                                <Home className='w-5 h-5' />
-                                Accueil
+                        {/* Icônes desktop */}
+                        <div className='hidden md:flex items-center gap-2'>
+                            
+                            {/* Favoris */}
+                            <Link to='/favorite' className='relative p-2.5 hover:bg-gray-100 rounded-full transition-colors duration-300 group'>
+                                <Heart className="w-5 h-5 text-gray-600 group-hover:text-red-500 transition-colors" />
+                                {getTotalHeart() > 0 && (
+                                    <span className="absolute -top-1 -right-1 min-w-[20px] h-5 px-1 text-xs bg-red-500 text-white rounded-full flex items-center justify-center font-medium">
+                                        {getTotalHeart()}
+                                    </span>
+                                )}
                             </Link>
-                            <a href='#about' className='cursor-pointer hover:text-light flex items-center gap-2'>
-                                <Info className='w-5 h-5' />
-                                À propos
-                            </a>
-                            <li className='cursor-pointer hover:text-light flex items-center gap-2'>
-                                <Briefcase className='w-5 h-5' />
-                                Services
-                            </li>
-                            <Link 
-                            to='/faqs' 
-                            onClick={() => setMobileMenuOpen(false)} 
-                            className='hover:text-light flex items-center gap-2'>
-                                <Utensils className='w-5 h-5' />
-                                FAQs
+
+                            {/* Panier */}
+                            <Link to='/card' className='relative p-2.5 hover:bg-gray-100 rounded-full transition-colors duration-300 group'>
+                                <ShoppingCart className="w-5 h-5 text-gray-600 group-hover:text-orange-500 transition-colors" />
+                                {getTotalCart() > 0 && (
+                                    <span className="absolute -top-1 -right-1 min-w-[20px] h-5 px-1 text-xs bg-orange-500 text-white rounded-full flex items-center justify-center font-medium">
+                                        {getTotalCart()}
+                                    </span>
+                                )}
                             </Link>
-                            <li className='cursor-pointer hover:text-light flex items-center gap-2'>
-                                <Phone className='w-5 h-5' />
-                                Contact
-                            </li>
-                        </ul>
-                    </nav>
+                        </div>
 
-                    <div className='flex flex-col gap-6 items-start border-t border-gray-200 mt-4 p-4'>
-                        <Link 
-                            to='/card' 
-                            className='flex items-center justify-between gap-2 cursor-pointer'
-                            onClick={() => setMobileMenuOpen(false)}
-                        >
-                            <p>Voir mon panier </p>
-                            <div className='relative'>
-                                <ShoppingCart className="w-6 h-6 cursor-pointer text-light" />
-                                <span className="absolute -top-2 -right-1 text-xs bg-background-dark-light text-white rounded-full w-4 h-4 flex items-center justify-center shadow-md">
-                                    {getTotalCart()}
-                                </span>
-                            </div>
-                        </Link>
-                        <Link 
-                            to='/favorite' 
-                            className='flex items-center justify-between gap-2 cursor-pointer'
-                            onClick={() => setMobileMenuOpen(false)}
-                        >
-                            <p>Voir mes favoris  </p>
-                            <div className='relative'>
-                                <Heart className="w-6 h-6 cursor-pointer text-light" />
-                                <span className="absolute -top-2 -right-1 text-xs bg-background-dark-light text-white rounded-full w-4 h-4 flex items-center justify-center shadow-md">
-                                    {getTotalHeart()}
-                                </span>
-                            </div>
-                        </Link>
-                    </div>
-
-                    {/* <div className='flex items-center gap-2 border-t border-gray-200 mt-2 w-full p-4'>
-                        <p>Connexion</p>
+                        {/* Bouton Login  */}
                         <button 
                             onClick={() => setIsShowLogin(true)} 
-                            className='bg-background-top-light px-2 py-2 rounded-full cursor-pointer'
+                            className='hidden md:flex items-center cursor-pointer gap-2 px-6 py-2.5 bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white rounded-full font-medium transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl'
                         >
-                            <User className="hover:text-yellow-400" />
+                            Se connecter
                         </button>
-                    </div> */}
+
+                        {/* Menu mobile */}
+                        <button 
+                            className='lg:hidden p-2.5 hover:bg-gray-100 rounded-full transition-colors duration-300'
+                            onClick={() => setMobileMenuOpen(true)}
+                        >
+                            <Menu className='w-5 h-5 text-gray-600' />
+                        </button>
+                    </div>
                 </div>
 
-                {/* Overlay when menu is open (optional) */}
-                {mobileMenuOpen && (
-                    <div className="fixed inset-0 bg-black/30 bg-opacity-30 z-40" onClick={() => setMobileMenuOpen(false)} />
+                {/* Barre de recherche overlay */}
+                {inputSearchOpen && (
+                    <div className="fixed inset-0 bg-black/20 z-50 flex items-start justify-center pt-4">
+                        <div className="w-full max-w-2xl mx-4">
+                            <div className="bg-white rounded-2xl shadow-2xl p-6 transform animate-in fade-in slide-in-from-top-4 duration-300">
+                                <div className="flex items-center gap-4">
+                                    <button
+                                        onClick={() => setInputSearchOpen(false)}
+                                        className=" cursor-pointer p-2 hover:bg-gray-100 rounded-full transition-colors"
+                                    >
+                                        <ArrowLeft className="w-5 h-5 text-gray-600" />
+                                    </button>
+                                    
+                                    <div className="flex-1 relative">
+                                        <input
+                                            type="search"
+                                            placeholder="Rechercher un menu..."
+                                            className="w-full px-4 py-3 bg-gray-50 border-0 rounded-lg text-gray-700 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-all"
+                                            autoFocus
+                                        />
+                                        <button className="absolute right-3 top-1/2 transform -translate-y-1/2 p-2 bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white rounded-lg transition-all cursor-pointer">
+                                            <Search className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 )}
             </nav>
+
+            {/* Menu mobile sidebar */}
+            <div className={`fixed top-0 left-0 h-full w-80 bg-white shadow-2xl transform transition-transform duration-300 z-50 ${
+                mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+            }`}>
+                
+                {/* Header du menu mobile */}
+                <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-gradient-to-r from-orange-50 to-yellow-50">
+                    <Link 
+                        to='/' 
+                        className='flex items-center gap-2 cursor-pointer'
+                        onClick={() => setMobileMenuOpen(false)}
+                    >
+                        <img className='w-8 h-8' src={assets.logo} alt="Logo" />
+                        <h1 className='text-xl font-bold font-outfit bg-gradient-to-r from-orange-500 to-yellow-500 bg-clip-text text-transparent'>
+                            Urban<span className='text-gray-700'>Spice</span>
+                        </h1>
+                    </Link>
+                    <button 
+                        className="p-2 hover:bg-white/50 rounded-full transition-colors"
+                        onClick={() => setMobileMenuOpen(false)}
+                    >
+                        <X className="w-5 h-5 text-gray-600" />
+                    </button>
+                </div>
+
+                {/* Navigation mobile */}
+                <nav className="py-4">
+                    <ul className="space-y-2">
+                        {[
+                            { icon: Home, name: 'Accueil', href: '#home' },
+                            { icon: Info, name: 'À propos', href: '#about' },
+                            { icon: Briefcase, name: 'Services', href: '#services' },
+                            { icon: Utensils, name: 'FAQs', href: '#faqs' },
+                            { icon: Phone, name: 'Contact', href: '#contact' },
+                        ].map((item, index) => (
+                            <li key={index}>
+                                <button
+                                    onClick={() => {
+                                        setMobileMenuOpen(false);
+                                        scrollToSection(item.href);
+                                    }}
+                                    className='w-full flex items-center gap-4 px-6 py-4 text-gray-700 hover:text-orange-500 hover:bg-orange-50 transition-all duration-300'
+                                >
+                                    <item.icon className='w-5 h-5' />
+                                    <span className="font-medium">{item.name}</span>
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                </nav>
+
+                {/* Actions mobiles */}
+                <div className='border-t border-gray-100 p-6 space-y-4'>
+                    <Link 
+                        to='/card' 
+                        className='flex items-center justify-between p-4 bg-orange-50 rounded-xl hover:bg-orange-100 transition-colors'
+                        onClick={() => setMobileMenuOpen(false)}
+                    >
+                        <span className="text-gray-700 font-medium">Mon panier</span>
+                        <div className='relative'>
+                            <ShoppingCart className="w-5 h-5 text-orange-500" />
+                            {getTotalCart() > 0 && (
+                                <span className="absolute -top-2 -right-2 min-w-[18px] h-4 px-1 text-xs bg-orange-500 text-white rounded-full flex items-center justify-center">
+                                    {getTotalCart()}
+                                </span>
+                            )}
+                        </div>
+                    </Link>
+
+                    <Link 
+                        to='/favorite' 
+                        className='flex items-center justify-between p-4 bg-red-50 rounded-xl hover:bg-red-100 transition-colors'
+                        onClick={() => setMobileMenuOpen(false)}
+                    >
+                        <span className="text-gray-700 font-medium">Mes favoris</span>
+                        <div className='relative'>
+                            <Heart className="w-5 h-5 text-red-500" />
+                            {getTotalHeart() > 0 && (
+                                <span className="absolute -top-2 -right-2 min-w-[18px] h-4 px-1 text-xs bg-red-500 text-white rounded-full flex items-center justify-center">
+                                    {getTotalHeart()}
+                                </span>
+                            )}
+                        </div>
+                    </Link>
+
+                    <button 
+                        onClick={() => {
+                            setIsShowLogin(true);
+                            setMobileMenuOpen(false);
+                        }} 
+                        className='w-full flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white rounded-xl font-medium transition-all duration-300 transform hover:scale-105'
+                    >
+                        <User className="w-5 h-5" />
+                        Se connecter
+                    </button>
+                </div>
+            </div>
+
+            {/* Overlay */}
+            {mobileMenuOpen && (
+                <div className="fixed inset-0 bg-black/30 z-30" onClick={() => setMobileMenuOpen(false)} />
+            )}
+
+            {/* Overlay */}
+            {inputSearchOpen && (
+                <div className="fixed inset-0 bg-black/30 z-40" onClick={() => setInputSearchOpen(false)} />
+            )}
         </>
     );
 };

@@ -36,11 +36,11 @@ const OurChefs = () => {
     }, []);
    
     return (
-        <div className='w-full md:px-8 lg:px-24 max-w-screen-2xl mx-auto overflow-hidden'>
+        <div className='w-full overflow-hidden'>
             <h1 className='text-2xl text-center py-4 md:pt-8 md:text-4xl font-semibold'> Nos Chefs Professionnels</h1>
 
             {/* Desktop */}
-            <div className='hidden md:grid px-8 md:px-0 gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 py-4 md:py-8'>
+            <div className='hidden md:grid px-4 sm:px-8 md:px-16 lg:px-24 2xl:px-36 mx-auto gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 py-4 md:py-8'>
                 {prof_data.map((service, index) => (
                     <div 
                         key={index}
