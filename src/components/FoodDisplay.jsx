@@ -74,7 +74,7 @@ const FoodDisplay = () => {
                 />
             )}
 
-            <div className='grid grid-cols-4 gap-4 px-4 sm:px-8 md:px-16 lg:px-24 max-w-screen-2xl mx-auto mb-8 mt-24 md:mt-8'>
+            <div className='grid grid-cols-4 gap-4 px-4 sm:px-8 md:px-16 lg:px-24 2xl:px-36 mx-auto mb-8 mt-24 md:mt-8'>
 
                 {/*Btn filter pour mobile */}
                 <div className='absolute -top-16 right-4 sm:right-8 md:right-32 md:hidden flex items-center gap-2'>

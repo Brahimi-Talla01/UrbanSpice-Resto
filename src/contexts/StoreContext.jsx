@@ -37,14 +37,6 @@ const StoreContextProvider = (props) => {
             question: "Puis-je organiser un événement ou une fête privée chez vous ?",
             answer: "Oui, notre espace peut être privatisé pour des événements spéciaux. Veuillez nous contacter à l’avance pour connaître les disponibilités et les modalités."
         },
-        {
-            question: "Comment puis-je signaler une allergie alimentaire ?",
-            answer: "Lors de votre commande en ligne ou en salle, veuillez indiquer clairement vos allergies. Notre équipe prendra toutes les précautions nécessaires."
-        },
-        {
-            question: "Est-ce que je peux modifier ou annuler ma commande ?",
-            answer: "Oui, vous pouvez modifier ou annuler votre commande dans un délai de 10 minutes après confirmation. Contactez-nous rapidement au numéro indiqué."
-        }
     ];
 
 

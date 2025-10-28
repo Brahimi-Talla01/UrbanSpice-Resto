@@ -1,11 +1,11 @@
 import { useContext, useState } from 'react';
 import { HelpCircle, MessageCircle } from 'lucide-react';
 import { StoreContext } from '../contexts/StoreContext';
-import ScrollToTopButton from '../components/SrollToTopButton';
-import FaqItem from '../components/FaqItem';
+import ScrollToTopButton from './SrollToTopButton';
+import FaqItem from './FaqItem';
 
 
-const Faqs = () => {
+const FaqsSection = () => {
   const [openIndex, setOpenIndex] = useState(null);
 
   const { FaqData } = useContext(StoreContext);
@@ -15,9 +15,9 @@ const Faqs = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-orange-50">
+    <div id='faqs' className="w-full py-4 md:py-12 mt-4 md:mt-16 px-4 sm:px-8 md:px-16 lg:px-24 2xl:px-36 mx-auto bg-background-top-light grid grid-cols-1 md:grid-cols-2 gap-10">
       {/* Hero Section */}
-      <div className="relative overflow-hidden mt-5 mb-5 rounded-xl">
+      <div className="relative overflow-hidden rounded-xl">
         <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/10 to-orange-500/10"></div>
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
           <div className="text-center">
@@ -48,7 +48,7 @@ const Faqs = () => {
       </div>
 
       {/* FAQ Section */}
-      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+      <section className="max-w-4xl ">
         <div className="space-y-4">
           {FaqData.map((item, index) => (
             <FaqItem
@@ -60,32 +60,6 @@ const Faqs = () => {
             />
           ))}
         </div>
-
-        {/* Contact Section */}
-        <div className="mt-16 text-center">
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">
-              Une question non résolue ?
-            </h3>
-            <p className="text-gray-600 mb-6 max-w-md mx-auto">
-              Notre équipe est là pour vous aider. N'hésitez pas à nous contacter directement.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a
-                href="tel:+2376XXXXXXXXX"
-                className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-semibold rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-300"
-              >
-                Nous appeler
-              </a>
-              <a
-                href="mailto:contact@urbanspice.cm"
-                className="inline-flex items-center justify-center px-6 py-3 bg-white text-gray-700 font-semibold rounded-xl border-2 border-gray-200 hover:border-yellow-300 hover:bg-yellow-50 transition-all duration-300"
-              >
-                Nous écrire
-              </a>
-            </div>
-          </div>
-        </div>
       </section>
 
       <ScrollToTopButton />
@@ -93,4 +67,4 @@ const Faqs = () => {
   );
 };
 
-export default Faqs;
+export default FaqsSection;

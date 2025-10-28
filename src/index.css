@@ -57,3 +57,27 @@
 .scrollbar-hide::-webkit-scrollbar {
     display: none;
 }
+
+@keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+@keyframes spin-very-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+.animate-spin-slow {
+    animation: spin-slow 8s linear infinite;
+}
+.animate-spin-very-slow {
+    animation: spin-very-slow 20s linear infinite;
+}
+.mes-points-pagination-custom .swiper-pagination-bullet {
+    background: rgba(249, 115, 22, 0.3);
+    width: 12px;
+    height: 12px;
+}
+.mes-points-pagination-custom .swiper-pagination-bullet-active-custom {
+    background: linear-gradient(45deg, #f59e0b, #f97316);
+    transform: scale(1.2);
+}

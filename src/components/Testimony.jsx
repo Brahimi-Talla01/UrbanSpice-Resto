@@ -36,7 +36,7 @@ const Testimony = () => {
     }, []);
 
     return (
-        <div className='w-full h-100 md:h-130 relative my-8 overflow-hidden'>
+        <div className='w-full h-100 md:h-160 relative my-8 overflow-hidden'>
 
             <div className='w-full h-full absolute inset-0'>
                 <img 
@@ -48,7 +48,7 @@ const Testimony = () => {
 
             <div className='absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/60'/>
 
-            <div className='absolute top-0 md:top-5 left-1/2 transform -translate-x-1/2 w-full md:px-8 lg:px-24 max-w-screen-2xl mx-auto overflow-hidden'>
+            <div className='absolute top-0 md:top-5 left-1/2 transform -translate-x-1/2 w-full overflow-hidden'>
                 <div className="text-center py-8">
                     <h1 className='text-xl md:text-4xl lg:text-5xl font-bold text-white mb-2 drop-shadow-lg'>
                         Ce que nos clients disent de nous !
@@ -57,7 +57,7 @@ const Testimony = () => {
                 </div>
 
                 {/* Desktop */}
-                <div className='hidden md:grid px-8 md:px-0 gap-6 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 py-4 md:py-8'>
+                <div className='hidden md:grid px-4 sm:px-8 md:px-16 lg:px-24 2xl:px-36 mx-auto gap-6 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 py-4 md:py-8'>
                     {testimonie_data.map((testimony, index) => (
                         <TestimonyCart 
                             key={index}

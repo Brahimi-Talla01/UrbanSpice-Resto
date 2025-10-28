@@ -1,6 +1,20 @@
 import { Clock, DollarSign, ListOrdered, Users } from 'lucide-react';
 import petdej1 from './petitdej1.jpeg';
 import petdej2 from './petitdej2.jpeg';
+import service7 from './commande1.jpeg';
+import dej1 from './dej1.jpeg';
+import dejeunerImg from './Img-dejeuner.jpeg';
+import diner1 from './Img-diner.jpeg';
+import service1 from './Img-livraison.jpeg';
+
+// Chefs
+import chef1 from './chef1.jpeg';
+import chef2 from './chef2.jpeg';
+import chef3 from './chef3.jpeg';
+//Testimony
+import test1 from './images.jpeg';
+import zdeveloper from './Zdevelopper.jpeg';
+
 
 // Table : User
 const users = [
@@ -23,24 +37,40 @@ const users = [
 // Table : Reservation
 const reservations = [
   {
-    id_reservation: 1,
-    nom: "Dupont",
-    email: "dupont@example.com",
-    telephone: "06 12 34 56 78",
+    id: 1,
+    nom: "Marie",
+    email: "marie@gmail.com",
+    telephone: "6 12 34 56 78",
     heure: "19:00",
-    date: "2024-04-15",
-    Nb_place: 4,
-    message: "Table près de la fenêtre s'il vous plaît."
+    date: "2025-09-30",
+    is_completed: false,
+    nb_place: 4,
+    message: "Table près de la fenêtre s'il vous plaît.",
+    created_at: "2025-09-10T15:20:00Z",
   },
   {
-    id_reservation: 2,
-    nom: "Durand",
-    email: "durand@example.com",
+    id: 2,
+    nom: "Feuzeu",
+    email: "feuzeu@gmail.com",
     telephone: "06 87 65 43 21",
     heure: "20:30",
     date: "2024-04-16",
-    Nb_place: 2,
-    message: "Pour une occasion spéciale."
+    is_completed: true,
+    nb_place: 2,
+    message: "Pour une occasion spéciale.",
+    created_at: "2024-04-10T15:20:00Z",
+  },
+  {
+    id: 3,
+    nom: "Tagne",
+    email: "tagne@gmail.com",
+    telephone: "6 87 65 43 21",
+    heure: "15:30",
+    date: "2025-10-16",
+    is_completed: false,
+    nb_place: 6,
+    message: "Pour ma bb.",
+    created_at: "2025-09-22T15:10:00Z",
   }
 ];
 
@@ -126,9 +156,10 @@ const commandes = [
   {
     "id": "order-111",
     "user_id": "user-123",
+    "user_name": "Mbarga",
     "total_amount": 6000,
     "currency": "XAF",
-    "status": "pending", 
+    "is_completed": true, 
     "created_at": "2025-09-21T10:05:00Z",
     "items": [
       {
@@ -139,8 +170,49 @@ const commandes = [
       }
     ]
   },
+  {
+    "id": "order-113",
+    "user_id": "user-127",
+    "user_name": "Mbopda",
+    "total_amount": 4000,
+    "currency": "XAF",
+    "status": "pending", 
+    "created_at": "2025-09-21T10:05:00Z",
+    "items": [
+      {
+        "menu_id": "uuid-123",
+        "title": "Ndolé viande",
+        "price": 2000,
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "id": "order-112",
+    "user_id": "user-127",
+    "user_name": "Tonga",
+    "total_amount": 4000,
+    "currency": "XAF",
+    "status": "completed", 
+    "created_at": "2025-09-21T10:05:00Z",
+    "items": [
+      {
+        "menu_id": "uuid-123",
+        "title": "Viande rotis",
+        "price": 2000,
+        "quantity": 1
+      },
+      {
+        "menu_id": "uuid-125",
+        "title": "Viande rotis",
+        "price": 500,
+        "quantity": 4
+      },
+    ]
+  },
 
 ];
+
 
 // Données mockées pour le dashboard
 const statsCards = [
@@ -202,6 +274,107 @@ const temoignages = [
   }
 ];
 
+
+//Table Service
+const services =[
+    {
+        "id": "1",
+        "image_url": service1,
+        "title":"Livraison",
+        "is_actived": true,
+        "created_at": "2025/08/20",
+    },
+    {
+        "id": "2",
+        "image_url": service7,
+        "title":"Commande",
+        "is_actived": true,
+        "created_at": "2025/08/20",
+    },
+    {
+        "id": "3",
+        "image_url": dej1,
+        "title":"Pétit Déjeuner",
+        "is_actived": true,
+        "created_at": "2025/08/20",
+    },
+    {
+        "id": "4",
+        "image_url": dejeunerImg,
+        "title":"Déjeuner",
+        "is_actived": true,
+        "created_at": "2025/08/20",
+    },
+    {
+        "id": "5",
+        "image_url": diner1,
+        "title":"Diner",
+        "is_actived": true,
+        "created_at": "2025/08/20",
+    },
+];
+
+const prof_data = [
+    {
+        "id": "1",
+        "image_url": chef3,
+        "name": "Dieuveil Malonga",
+        "post": "Chef Cuisinier Renommé",
+        "is_actived": true,
+        "created_at": "2025/08/20",
+        "description": "Célèbre chef Camerounais, restaurateur et personnalité de la télévision, connu pour ses émissions culinaires et ses restaurants étoilés Michelin à travers le monde."
+    },
+    {
+        "id": "2",
+        "image_url": chef1,
+        "name": "Georgiana Viou",
+        "post": "Sommelière Experte",
+        "is_actived": true,
+        "created_at": "2025/08/20",
+        "description": "Sommelière passionnée et reconnue pour sa connaissance approfondie des vins, capable de sublimer chaque plat par des accords mets-vins parfaits."
+    },
+    {
+        "id": "3",
+        "image_url": chef2,
+        "name": "Mory Sacko",
+        "post": "Maître Boulanger-Pâtissier",
+        "is_actived": true,
+        "created_at": "2025/08/20",
+        "description": "Artisan boulanger-pâtissier dévoué, perpétuant les traditions de la boulangerie française avec des créations gourmandes et des pains artisanaux exceptionnels."
+    }
+];
+
+const testimonie_data = [
+    {
+        "id": "1",
+        "is_actived": true,
+        "created_at": "2025/08/20",
+        "description": "Le service est impécable! Le personnel est attentionné, souriant et trés professionnel, On se sent vraiment choyé.",
+        "image_url": test1,
+        "name": "Samuel",
+        "profession": "Dev, Full-Stack",
+    },
+    {
+        "id": "2",
+        "is_actived": true,
+        "created_at": "2025/08/20",
+        "description": "Le service est impécable! Le personnel est attentionné, souriant et trés professionnel, On se sent vraiment choyé.",
+        "image_url": zdeveloper,
+        "name": "Lesley",
+        "profession": "Entrepreneur",
+    },
+    {
+        "id": "3",
+        "is_actived": true,
+        "created_at": "2025/08/20",
+        "description": "Le service est impécable! Le personnel est attentionné, souriant et trés professionnel, On se sent vraiment choyé.",
+        "image_url": test1,
+        "name": "Patrick",
+        "profession": "Data scientist",
+    }
+];
+
+
 // Exporter toutes les données pour utilisation dans le frontend
 export {
   users,
@@ -211,5 +384,8 @@ export {
   panier,
   favoris,
   commandes,
-  temoignages
+  temoignages,
+  services,
+  prof_data,
+  testimonie_data,
 };

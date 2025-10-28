@@ -14,7 +14,7 @@ const Footer = () => {
             </div>
 
             <div className='pt-20 pb-12'>
-                <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 md:px-8 lg:px-24 max-w-screen-2xl mx-auto px-6'>
+                <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 px-4 sm:px-8 md:px-16 lg:px-24 2xl:px-36 mx-auto'>
 
                     {/* Newsletter */}
                     <div className='col-span-1 sm:col-span-2 lg:col-span-2 space-y-6'>

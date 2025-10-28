@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import { StoreContext } from '../contexts/StoreContext';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
-import { ArrowRight } from 'lucide-react';
+import { ArrowDown, ArrowRight } from 'lucide-react';
 
 const Card = () => {
 
@@ -29,7 +29,7 @@ const Card = () => {
           {/* Section Cart */}
           <div className='lg:col-span-2 space-y-6'>
             {!cartItems || Object.keys(cartItems).length === 0 ? (
-              <div className='text-center py-16 bg-white rounded-lg shadow-lg border border-gray-100'>
+              <div className='text-center flex items-center justify-center py-16 bg-white rounded-lg shadow-lg border border-gray-100'>
                 <div className='max-w-md mx-auto'>
                   <div className='w-24 h-24 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center'>
                     <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -40,7 +40,7 @@ const Card = () => {
                   <p className='text-gray-600 mb-6'>Découvrez nos délicieux plats et ajoutez-les à votre panier</p>
                   <button 
                     onClick={() => navigate('/')}
-                    className='px-8 py-3 bg-yellow-500 text-white font-semibold rounded hover:bg-yellow-600 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl'
+                    className='px-8 py-3 bg-gradient-to-r from-yellow-500 to-orange-500 text-white cursor-pointer font-semibold rounded-lg hover:bg-yellow-600 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl'
                   >
                     Retourner au menu
                   </button>

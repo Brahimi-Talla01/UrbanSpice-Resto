@@ -5,8 +5,8 @@ const Contact = () => {
     const [isLoading, setIsLoading] = useState(true);
 
     return (
-        <div className='w-full md:px-8 lg:px-24 max-w-screen-2xl mx-auto overflow-hidden md:mt-16'>
-            <div className="text-center mb-12">
+        <div id='contact' className='w-full px-4 sm:px-8 md:px-16 lg:px-24 2xl:px-36 mx-auto overflow-hidden md:mt-16'>
+            <div className="text-center mb-4 mt-6 md:mb-12 md:mt-12">
                 <h1 className='text-2xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-4'>
                     Besoin d'aide ? 
                     <span className="text-yellow-500"> Contactez-nous</span>
@@ -21,13 +21,13 @@ const Contact = () => {
                 <div className='order-2 lg:order-1 space-y-6'>
                     
                     {/* Carte Adresse */}
-                    <div className='group bg-gradient-to-br from-white to-gray-50 hover:from-yellow-50 hover:to-white rounded-2xl p-6 border border-gray-100 hover:border-yellow-200 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1'>
+                    <div className='group bg-gradient-to-br from-white to-gray-50 hover:from-yellow-50 hover:to-white rounded-2xl p-3 md:p-6 border border-gray-100 hover:border-yellow-200 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1'>
                         <div className='flex items-center gap-4'>
                             <div className='w-16 h-16 bg-gradient-to-br from-yellow-400 to-yellow-500 flex items-center justify-center rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300'>
                                 <MapPin className='w-6 h-6 text-white' />
                             </div>
                             <div className='flex flex-col gap-2'>
-                                <h2 className='text-xl font-bold text-gray-800 group-hover:text-yellow-600 transition-colors'>
+                                <h2 className='text-lg font-bold text-gray-800 group-hover:text-yellow-600 transition-colors'>
                                     Adresse
                                 </h2>
                                 <p className='text-gray-600 font-medium'>Emana, Ydé 530012</p>
@@ -37,16 +37,16 @@ const Contact = () => {
                     </div>
 
                     {/* Carte Téléphone */}
-                    <div className='group bg-gradient-to-br from-white to-gray-50 hover:from-yellow-50 hover:to-white rounded-2xl p-6 border border-gray-100 hover:border-yellow-200 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1'>
+                    <div className='group bg-gradient-to-br from-white to-gray-50 hover:from-yellow-50 hover:to-white rounded-2xl p-3 md:p-6 border border-gray-100 hover:border-yellow-200 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1'>
                         <div className='flex items-center gap-4'>
                             <div className='w-16 h-16 bg-gradient-to-br from-yellow-400 to-yellow-500 flex items-center justify-center rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300'>
                                 <Phone className='w-6 h-6 text-white' />
                             </div>
                             <div className='flex flex-col gap-2'>
-                                <h2 className='text-xl font-bold text-gray-800 group-hover:text-yellow-600 transition-colors'>
+                                <h2 className='text-lg font-bold text-gray-800 group-hover:text-yellow-600 transition-colors'>
                                     Téléphone
                                 </h2>
-                                <a href="tel:+237" className='text-xl font-bold text-gray-800 group-hover:text-yellow-600 transition-colors'>
+                                <a href="tel:+237" className='text-sm font-bold text-gray-800 group-hover:text-yellow-600 transition-colors'>
                                     +237 XXX XXX XXX
                                 </a>
                                 <p className='text-sm text-gray-500'>Appelez-nous maintenant</p>
@@ -55,13 +55,13 @@ const Contact = () => {
                     </div>
 
                     {/* Carte Email */}
-                    <div className='group bg-gradient-to-br from-white to-gray-50 hover:from-yellow-50 hover:to-white rounded-2xl p-6 border border-gray-100 hover:border-yellow-200 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1'>
+                    <div className='group bg-gradient-to-br from-white to-gray-50 hover:from-yellow-50 hover:to-white rounded-2xl p-3 md:p-6 border border-gray-100 hover:border-yellow-200 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1'>
                         <div className='flex items-center gap-4'>
                             <div className='w-16 h-16 bg-gradient-to-br from-yellow-400 to-yellow-500 flex items-center justify-center rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300'>
                                 <Mail className='w-6 h-6 text-white' />
                             </div>
                             <div className='flex flex-col gap-2'>
-                                <h2 className='text-xl font-bold text-gray-800 group-hover:text-yellow-600 transition-colors'>
+                                <h2 className='text-lg font-bold text-gray-800 group-hover:text-yellow-600 transition-colors'>
                                     Email
                                 </h2>
                                 <a href="mailto:urbanspice@gmail.com" className='text-blue-600 font-medium hover:text-blue-700 transition-colors hover:underline'>
@@ -73,13 +73,13 @@ const Contact = () => {
                     </div>
 
                     {/* Carte Horaires */}
-                    <div className='group bg-gradient-to-br from-white to-gray-50 hover:from-yellow-50 hover:to-white rounded-2xl p-6 border border-gray-100 hover:border-yellow-200 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1'>
+                    <div className='group bg-gradient-to-br from-white to-gray-50 hover:from-yellow-50 hover:to-white rounded-2xl p-3 md:p-6 border border-gray-100 hover:border-yellow-200 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1'>
                         <div className='flex items-start gap-4'>
                             <div className='w-16 h-16 bg-gradient-to-br from-yellow-400 to-yellow-500 flex items-center justify-center rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300'>
                                 <Clock className='w-6 h-6 text-white' />
                             </div>
                             <div className='flex flex-col gap-2'>
-                                <h2 className='text-xl font-bold text-gray-800 group-hover:text-yellow-600 transition-colors'>
+                                <h2 className='text-lg font-bold text-gray-800 group-hover:text-yellow-600 transition-colors'>
                                     Heures d'ouverture
                                 </h2>
                                 <div className='space-y-1'>
@@ -109,7 +109,7 @@ const Contact = () => {
                         {isLoading && (
                             <div className="absolute inset-0 bg-gradient-to-br from-white/95 to-gray-50/95 backdrop-blur-sm flex flex-col items-center justify-center z-10 rounded-2xl">
                                 <div className='relative'>
-                                    <div className='animate-spin rounded-full h-20 w-20 border-4 border-gray-200'></div>
+                                    <div className='animate-spin rounded-full h-20 w-20 border-4 border-background-top-light'></div>
                                     <div className='animate-spin rounded-full h-20 w-20 border-4 border-t-yellow-500 absolute top-0 left-0'></div>
                                 </div>
                                 <p className="text-gray-600 font-medium mt-4 animate-pulse">
@@ -118,12 +118,12 @@ const Contact = () => {
                             </div>
                         )}
 
-                        <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white p-4 z-20">
+                        <div className="absolute top-0 left-0 right-0 bg-background-top-light text-gray-700 p-4 z-20">
                             <h3 className="font-bold text-lg flex items-center gap-2">
                                 <MapPin className="w-5 h-5" />
                                 Notre localisation
                             </h3>
-                            <p className="text-yellow-100 text-sm">Trouvez-nous facilement</p>
+                            <p className="text-yellow-500 text-sm">Trouvez-nous facilement</p>
                         </div>
 
                         <iframe

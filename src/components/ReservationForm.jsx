@@ -3,7 +3,7 @@ import { assets } from '../assets/assets/assets';
 const ReservationForm = () => {
     return (
         <div className='w-full bg-background-top-light'>
-            <div className='w-full md:px-8 lg:px-24 max-w-screen-2xl mx-auto overflow-hidden md:mt-16 pb-6'>
+            <div className='w-full px-4 sm:px-8 md:px-16 lg:px-24 2xl:px-36 mx-auto overflow-hidden md:mt-16 pb-6'>
                 <h1 className='text-xl md:text-4xl font-semibold text-light text-center py-8 font-outfit'>Réservez un séjour chez-nous!</h1>
 
                 <div className='grid grid-cols-1 md:grid-cols-2 gap-4 px-4 md:px-0 md:gap-8 overflow-hidden py-6'>

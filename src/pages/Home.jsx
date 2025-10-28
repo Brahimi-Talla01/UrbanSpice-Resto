@@ -8,27 +8,40 @@ import OurChefs from '../components/OurChefs';
 import ReservationForm from '../components/ReservationForm';
 import Contact from '../components/Contact';
 import Testimony from '../components/Testimony';
+import FaqsSection from '../components/FaqsSection';
 
 const Home = () => {
 
   const foodRef = useRef(null);
+  const resRef = useRef(null);
 
   const handleFoodNavigate = () => {
     foodRef.current?.scrollIntoView({ behavior: 'smooth' })
+  };
+  const handleReservationNavigate = () => {
+    resRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
 
 
   return (
     <div className='w-full h-auto'>
-      <Header onScrollToMenu={handleFoodNavigate} />
+      <Header 
+        onScrollToMenu={handleFoodNavigate} 
+        onScrollReservation={handleReservationNavigate} 
+      />
       <Services />
       <About />
       <div ref={foodRef}>
         <FoodDisplay />
       </div>
       <OurChefs />
-      <ReservationForm />
+      <div ref={resRef}>
+        <ReservationForm />
+      </div>
       <Contact />
+      <div>
+        <FaqsSection />
+      </div>
       <Testimony />
 
 
