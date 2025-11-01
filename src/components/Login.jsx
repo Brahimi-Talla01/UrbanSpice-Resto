@@ -5,6 +5,7 @@ const Login = ({ onClose, isShowLogin }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
+    const [loading, setLoading] = useState(true);
 
     const [currState, setCurrState] = useState("Se connecter");
 
@@ -80,8 +81,11 @@ const Login = ({ onClose, isShowLogin }) => {
                             />
                         </div>
 
-                        <button type='submit' className='w-full py-2 font-medium bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white rounded cursor-pointer hover:bg-primary/90 transition-all'>
-                            {currState !== "Se connecter" ? "Créer un compte" : "Se connecter"}
+                        <button type='submit' className='w-full flex items-center gap-2 justify-center py-2 font-medium bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white rounded cursor-pointer hover:bg-primary/90 transition-all'>
+                            {loading && 
+                                <span className='w-8 h-8 my-1 rounded-full border-3 border-t-transparent border-yellow-500 animate-spin'></span>
+                            }
+                            {currState !== "Se connecter" ? <span>Créer un compte</span> : <span>Se connecter</span>}
                         </button>
                         {currState === "Créer un compte" 
                             ? <p className='py-2'>Vous avez déjá un compte ? <span className='text-primary cursor-pointer' onClick={() => setCurrState("Se connecter")}>Se connecter</span></p> 

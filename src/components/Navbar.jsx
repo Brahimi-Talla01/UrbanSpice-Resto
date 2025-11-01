@@ -3,6 +3,7 @@ import { assets } from '../assets/assets/assets';
 import { ShoppingCart, Heart, Search, Menu, Info, Briefcase, Utensils, Phone, X, ArrowLeft, Home, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { StoreContext } from '../contexts/StoreContext';
+import UserProfile from './UserProfile';
 
 const Navbar = () => {
     const { getTotalCart, getTotalHeart, setIsShowLogin } = useContext(StoreContext);
@@ -10,6 +11,7 @@ const Navbar = () => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [inputSearchOpen, setInputSearchOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
+    const [isConnected, setIsConnected] = useState(false);
     const [activeSection, setActiveSection] = useState('home');
 
     useEffect(() => {
@@ -162,12 +164,16 @@ const Navbar = () => {
                         </div>
 
                         {/* Bouton Login  */}
-                        <button 
-                            onClick={() => setIsShowLogin(true)} 
-                            className='hidden md:flex items-center cursor-pointer gap-2 px-6 py-2.5 bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white rounded-full font-medium transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl'
-                        >
-                            Se connecter
-                        </button>
+                        {
+                            !isConnected ? 
+                                <button 
+                                    onClick={() => setIsShowLogin(true)} 
+                                    className='hidden md:flex items-center cursor-pointer gap-2 px-6 py-2.5 bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white rounded-full font-medium transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl'
+                                >
+                                    Se connecter
+                                </button>
+                            : <UserProfile />
+                        }
 
                         {/* Menu mobile */}
                         <button 

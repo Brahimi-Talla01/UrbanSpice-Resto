@@ -9,6 +9,7 @@ import ReservationForm from '../components/ReservationForm';
 import Contact from '../components/Contact';
 import Testimony from '../components/Testimony';
 import FaqsSection from '../components/FaqsSection';
+import UserProfile from '../components/UserProfile';
 
 const Home = () => {
 
@@ -43,6 +44,8 @@ const Home = () => {
         <FaqsSection />
       </div>
       <Testimony />
+
+      {/* <UserProfile /> */}
 
 
       <ScrollToTopButton />
