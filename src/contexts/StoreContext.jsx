@@ -1,9 +1,30 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { card_menu } from "../assets/assets/assets";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-export const StoreContext = createContext(null);
+// URL de base de l'API 
+const API_BASE_URL = 'http://localhost/UrbanSpice-Resto/backend/controllers';
+
+export const StoreContext = createContext();
+
+/**
+ * Hook personnalisé pour accéder au contexte d'authentification
+ * 
+ * UTILISATION dans les composants :
+ * const { user, Login, Register, logout } = useAuth();
+ */
+export const useAuth = () => {
+    // Récupérer le contexte
+    const context = useContext(StoreContext);
+    
+    // Vérifier si le hook est utilisé dans un Provider
+    if (!context) {
+        throw new Error("useAuth doit être utilisé à l'intérieur d'un AuthProvider");
+    }
+    
+    return context;
+};
 
 const StoreContextProvider = (props) => {
     const [cartItems, setCartItems] = useState({});
@@ -11,6 +32,138 @@ const StoreContextProvider = (props) => {
     const [isAddedToCart, setIsAddedToCart] = useState(false);
     const [isShowLogin, setIsShowLogin] = useState(false);
 
+    const [user, setUser] = useState(null);      
+    const [loading, setLoading] = useState(true);
+
+
+    // VÉRIFIER LA SESSION AU CHARGEMENT
+    
+    useEffect(() => {
+        checkUserSession();
+    }, []);
+
+    /**
+     * Vérifier si l'utilisateur a une session active
+     * 
+     */
+    const checkUserSession = async () => {
+        try {
+            const response = await fetch(
+                `${API_BASE_URL}/AuthController.php?action=check`,
+                {
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' } 
+                }
+            );
+
+            const data = await response.json();
+
+            if (data.authenticated) {
+                setUser(data.user);
+            }
+        } catch (error) {
+            console.error('Erreur vérification session:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+     // FONCTION REGISTER (Pour RegisterForm.jsx)
+    
+    /**
+     * Inscrire un nouvel utilisateur
+     */
+    const Register = async (userData) => {
+        try {
+          
+            const response = await fetch(
+                `${API_BASE_URL}/AuthController.php?action=register`,
+                {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(userData)
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Erreur lors de l\'inscription');
+            }
+            
+            return data; // { message: "Inscription réussie" }
+
+        } catch (error) {
+            throw error; // Relancer l'erreur pour le composant
+        }
+    };
+
+    // FONCTION LOGIN (Pour LoginForm.jsx)
+    
+    /**
+     * Connecter un utilisateur
+     * 
+     * @param {string} email - Email de l'utilisateur
+     * @param {string} password - Mot de passe
+     * @returns {Promise} Réponse du serveur avec les données utilisateur
+     */
+    const Login = async (email, password) => {
+        try {
+            const response = await fetch(
+                `${API_BASE_URL}/AuthController.php?action=login`,
+                {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                }
+            );
+
+            
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                
+                throw new Error(data.message || 'Erreur lors de la connexion');
+            }
+
+            // Mettre à jour l'état de l'utilisateur
+            setUser(data.user);
+
+            return data; // { message: "...", user: {...} }
+
+        } catch (error) {
+            throw error; 
+        }
+    };
+
+     // ========================================
+    // FONCTION LOGOUT (Déconnexion)
+    // ========================================
+    
+    /**
+     * Déconnecter l'utilisateur
+     */
+    const logout = async () => {
+        try {
+            await fetch(
+                `${API_BASE_URL}/AuthController.php?action=logout`,
+                {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' }
+                }
+            );
+            
+            // Réinitialiser l'état
+            setUser(null);
+            
+        } catch (error) {
+            console.error('Erreur déconnexion:', error);
+        }
+    };
 
     const FaqData = [
         {
@@ -142,6 +295,14 @@ const StoreContextProvider = (props) => {
     }, [cartItems]);
 
     const contextValue = {
+
+        user,              // Utilisateur connecté (ou null)
+        loading,           // État de chargement initial
+        Register,          // Fonction d'inscription
+        Login,             // Fonction de connexion
+        logout,            // Fonction de déconnexion
+        isAuthenticated: !!user,  // true si connecté, false sinon
+
         addToCart,
         setCartItems,
         removeToCart,

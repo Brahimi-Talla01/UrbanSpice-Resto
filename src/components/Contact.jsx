@@ -138,12 +138,11 @@ const Contact = () => {
                             onLoad={() => setIsLoading(false)}
                         />
 
-                        <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm rounded-xl px-4 py-2 shadow-lg border border-gray-200">
-                            <p className="text-sm font-semibold text-gray-800 flex items-center gap-2">
-                                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                                Ouvert maintenant
-                            </p>
+                        <div className="text-sm font-semibold text-gray-800 flex items-center gap-2">
+                            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse inline-block"></span>
+                            Ouvert maintenant
                         </div>
+
                     </div>
                 </div>
 
