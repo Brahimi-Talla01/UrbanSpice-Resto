@@ -1,33 +1,26 @@
 import { useEffect, useState } from 'react';
-// import { navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/StoreContext';
-import { Navigate } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
 const Login = ({ onClose, isShowLogin }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
   const [message, setMessage] = useState({type:'', text:''});
-  const [loading, setLoading] = useState(false);
-
-  // UseContext de l'inscription de l'utilisateur
   const { Register, Login } = useAuth();
   const navigate = useNavigate();
   const [currState, setCurrState] = useState("Se connecter");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [loading, setLoading] = useState(false); // Changé à false par défaut
 
-  // Fonction pour créer les données de connexion avec validation
   const createLoginData = () => {
-    // Validation des champs
     if (password.trim().length <= 0 || email.trim().length <= 0) {
       setMessage({
         type: 'error',
         text: 'veuillez remplir tous les champs'
       })
-      return true;
+      return null;
     }
 
-    // Validation de l'email avec regex
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email.trim())) {
       setMessage({
@@ -37,7 +30,6 @@ const Login = ({ onClose, isShowLogin }) => {
       return null;
     }
 
-    // Validation du mot de passe
     if (password.trim().length < 6) {
       setMessage({
         type: 'error',
@@ -46,11 +38,9 @@ const Login = ({ onClose, isShowLogin }) => {
       return null;
     }
 
-    // Création de l'objet loginData avec nettoyage des données
     const loginData = {
       email: email.trim().toLowerCase(),
       password: password.trim(),
-      // name: name.trim()
     };
 
     return loginData;
@@ -58,12 +48,10 @@ const Login = ({ onClose, isShowLogin }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Création des données de connexion avec validation
     const userData = createLoginData();
     
     if (!userData) {
-      return; // La validation a échoué
+      return;
     }
 
     setLoading(true);
@@ -80,19 +68,14 @@ const Login = ({ onClose, isShowLogin }) => {
         }
         setMessage({
             type: "success",
-            text: message.text || "Compte créé avec succès!..."
+            text: "Compte créé avec succès!..."
         });
-        //rediriger vers la page de connexion
-        setTimeout(()=> {
-            setCurrState("Se connecter"); // Basculer vers la connexion après inscription
-            // navigate('/login')
-        })
-        // Réinitialiser les champs
+        setTimeout(() => {
+            setCurrState("Se connecter");
+        }, 2000);
         setName('');
         setEmail('');
         setPassword('');
-
-        
       } else {
         const response = await Login(email, password);
         if (!response) {
@@ -106,18 +89,15 @@ const Login = ({ onClose, isShowLogin }) => {
             type: 'success',
             text: "Connexion réussie!"
         });
-        //On Sauvegarde les donnees utilisateurs
         localStorage.setItem("user", JSON.stringify(response.user));
-
-        //On redirige en fonction du role
-        setTimeout(()=>{
+        setTimeout(() => {
           if (response.user.role === 'admin') {
             navigate('/admin');
           } else {
             navigate('/');
           }
-        })
-        onClose(); // Fermer la modal après connexion réussie
+        }, 1000);
+        onClose();
       }
     } catch (error) {
       setMessage({
@@ -129,10 +109,9 @@ const Login = ({ onClose, isShowLogin }) => {
     }
   };
 
-  // Nettoyage des champs quand on change d'état
   useEffect(() => {
     if (currState === "Se connecter") {
-      setName(''); // Vider le champ nom en mode connexion
+      setName('');
     }
   }, [currState]);
 
@@ -145,7 +124,6 @@ const Login = ({ onClose, isShowLogin }) => {
         className={`relative w-full mx-2 p-6 bg-white border border-yellow-500 shadow-xl rounded-lg ${currState === "Se connecter" ? "max-w-sm" : "max-w-lg"}`}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Bouton de fermeture */}
         <button 
           onClick={onClose}
           className='absolute top-1 right-3 text-black text-4xl font-semibold hover:text-yellow-500 transition duration-300 cursor-pointer'
@@ -165,15 +143,15 @@ const Login = ({ onClose, isShowLogin }) => {
             </p>
           </div>
 
-          {/* mess age de retour utilisateur */}
-          {message.text && (<div className={`mb-4 p-2 rounded-lg ${
-            message.type === 'success'
+          {message.text && (
+            <div className={`mb-4 p-2 rounded-lg ${
+              message.type === 'success'
                 ? 'bg-green-50 text-green-700 border border-green-200'
                 : 'bg-red-50 text-red-700 border border-red-200'
-          }`}>
-            {message.text}
-          </div>
-        )}
+            }`}>
+              {message.text}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className='mt-6 w-full text-gray-600'>
             {currState === "Créer un compte" && (
@@ -183,7 +161,6 @@ const Login = ({ onClose, isShowLogin }) => {
                   onChange={(e) => setName(e.target.value)}
                   value={name}
                   type="text"
-                //   required
                   placeholder='Votre nom'
                   className='border-b-2 border-gray-300 p-2 outline-none mb-6'
                 />
@@ -196,7 +173,7 @@ const Login = ({ onClose, isShowLogin }) => {
                 onChange={(e) => setEmail(e.target.value)}
                 value={email}
                 type="email"
-                // required
+                required
                 placeholder='votre@email.com'
                 className='border-b-2 border-gray-300 p-2 outline-none mb-6'
               />
@@ -208,7 +185,7 @@ const Login = ({ onClose, isShowLogin }) => {
                 onChange={(e) => setPassword(e.target.value)}
                 value={password}
                 type="password"
-                // required
+                required
                 placeholder='votre mot de passe'
                 className='border-b-2 border-gray-300 p-2 outline-none mb-6'
               />
@@ -216,9 +193,12 @@ const Login = ({ onClose, isShowLogin }) => {
 
             <button 
               type='submit' 
-              disabled = {loading}
-              className='w-full py-2 font-medium bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white rounded cursor-pointer hover:bg-primary/90 transition-all'
+              disabled={loading}
+              className='w-full flex items-center gap-2 justify-center py-2 font-medium bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white rounded cursor-pointer hover:bg-primary/90 transition-all'
             >
+              {loading && 
+                <span className='w-8 h-8 my-1 rounded-full border-3 border-t-transparent border-yellow-500 animate-spin'></span>
+              }
               {currState === "Se connecter" ? "Se connecter" : "Créer un compte"}
             </button>
             
