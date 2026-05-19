@@ -1,4 +1,3 @@
-// frontend/src/components/admin/TestimonyTableItem.jsx
 import { Trash2, Pencil, CheckCircle2, CircleOff } from "lucide-react";
 
 const TestimonyTableItem = ({ testimonie, index, toggleTes, archived, onEdit }) => {

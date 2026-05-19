@@ -6,7 +6,7 @@ import { getAllServices, deleteService, toggleService } from "../../../services/
 import { toast } from "react-toastify";
 
 const Service = () => {
-  const { openForm, closeForm, isFormOpen } = useAdminForm(); // ✅ Ajouter isFormOpen
+  const { openForm, closeForm, isFormOpen } = useAdminForm(); 
   
   const [filter, setFilter] = useState("all");
   const [services, setServices] = useState([]);
@@ -32,22 +32,18 @@ const Service = () => {
     loadServices();
   }, []);
 
-  // ✅ Rafraîchir après chaque action - Version synchrone
   const refreshServices = () => {
     loadServices();
   };
 
-  // ✅ Ajouter un service
   const handleAddService = () => {
     openForm('service');
   };
 
-  // ✅ Modifier un service
   const handleEditService = (service) => {
     openForm('service', service);
   };
 
-  // ✅ Détecter la fermeture du formulaire pour recharger
   useEffect(() => {
     if (!isFormOpen) {
       // Formulaire vient d'être fermé, on recharge
@@ -55,7 +51,6 @@ const Service = () => {
     }
   }, [isFormOpen]);
 
-  // ✅ Activer/Désactiver un service
   const handleToggleActive = async (id_service, currentStatus) => {
     try {
       const newStatus = currentStatus === 1 ? 0 : 1;
@@ -63,7 +58,7 @@ const Service = () => {
       
       if (response.success) {
         toast.success(response.message || "Statut modifié");
-        await loadServices(); // ✅ Recharger immédiatement
+        await loadServices(); 
       } else {
         toast.error(response.message || "Erreur lors du changement de statut");
       }
@@ -73,7 +68,6 @@ const Service = () => {
     }
   };
 
-  // ✅ Supprimer un service
   const handleDelete = async (id_service) => {
     if (!window.confirm("Supprimer ce service ?")) return;
     
@@ -81,7 +75,7 @@ const Service = () => {
       const response = await deleteService(id_service);
       if (response.success) {
         toast.success("Service supprimé");
-        await loadServices(); // ✅ Recharger immédiatement
+        await loadServices();
       } else {
         toast.error(response.message || "Erreur lors de la suppression");
       }
@@ -162,7 +156,7 @@ const Service = () => {
 
       <div className="relative h-4/5 w-full overflow-x-auto pt-4 mt-8 bg-white shadow rounded-lg scrollbar-hide">
         
-        {/* ✅ Message quand la liste est vide */}
+        {/* Message quand la liste est vide */}
         {filteredService.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-gray-400">
             <svg className="w-16 h-16 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

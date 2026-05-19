@@ -2,9 +2,6 @@ import { Trash2, Pencil, CheckCircle2, CircleOff } from "lucide-react";
 
 const MenuTableItem = ({ menu, togglePublish, deleteMenu, onEdit }) => {
 
-    // ✅ FIX 1 — id_menu pas id
-    // AVANT : menu.id → undefined → togglePublish/deleteMenu recevaient undefined
-    // APRÈS : menu.id_menu qui est le vrai champ retourné par l'API
     const menuId      = menu.id_menu || menu.id;
     const isPublished = Number(menu.is_published) === 1;
 
@@ -19,9 +16,6 @@ const MenuTableItem = ({ menu, togglePublish, deleteMenu, onEdit }) => {
         }
     };
 
-    // ✅ FIX 2 — created_at : "0000-00-00 00:00:00" → Invalid Date
-    // MySQL retourne "0000-00-00 00:00:00" quand created_at n'a pas de DEFAULT
-    // On détecte cette valeur et on affiche "--" à la place
     const formatDate = (dateStr) => {
         if (!dateStr || dateStr.startsWith('0000-00-00')) return '--';
         const date = new Date(dateStr.replace(' ', 'T')); // Safari fix
@@ -33,7 +27,7 @@ const MenuTableItem = ({ menu, togglePublish, deleteMenu, onEdit }) => {
         });
     };
 
-    // ✅ FIX 3 — prix formaté
+    // prix formaté
     const priceDisplay = menu.price
         ? `${Number(menu.price).toLocaleString('fr-FR')} ${menu.currency || ''}`
         : '--';

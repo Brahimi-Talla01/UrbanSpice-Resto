@@ -6,12 +6,12 @@ const ServiceTableItem = ({ service, index, toggleActived, archiveService, onEdi
     return (
         <tr className="border-b border-gray-200 hover:bg-gray-50">
             
-            {/* Numéro - ✅ Utiliser index au lieu de service.id */}
+            {/* Numéro */}
             <td className="px-6 py-4 font-medium text-gray-800">
                 {index}
             </td>
 
-            {/* Image - ✅ Vérifier si image_url existe */}
+            {/* Image - Vérifier si image_url existe */}
             <td className="px-6 py-4">
                 {service.image_url ? (
                     <img 
@@ -31,7 +31,7 @@ const ServiceTableItem = ({ service, index, toggleActived, archiveService, onEdi
                 {service.title}
             </td>
 
-            {/* Date de creation du service - ✅ Formater la date */}
+            {/* Date de creation du service*/}
             <td className="px-6 py-4 text-gray-600">
                 {service.created_at ? new Date(service.created_at).toLocaleDateString('fr-FR') : "N/A"}
             </td>

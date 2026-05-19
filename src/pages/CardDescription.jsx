@@ -20,16 +20,11 @@ const CardDescription = () => {
             try {
                 setLoading(true);
 
-                // ✅ CORRECTION 1 : charger le plat depuis l'API au lieu de card_menu statique
-                // AVANT : const mainDish = card_menu.find((cart) => cart.id === id)
-                //         → card_menu est statique, les menus créés depuis l'admin n'y sont pas
-                //         → find retournait undefined → "Plat non trouvé"
                 const response = await getMenuById(id);
                 if (response.success && response.menu) {
                     setMainDish(response.menu);
                 }
 
-                // ✅ CORRECTION 2 : charger les autres menus depuis l'API
                 const othersResponse = await getPublishedMenus();
                 if (othersResponse.success && othersResponse.menus) {
                     setOtherMenus(othersResponse.menus);
@@ -73,14 +68,10 @@ const CardDescription = () => {
         );
     }
 
-    // ✅ CORRECTION 3 : normaliser les champs API → composant
-    // L'API retourne id_menu, image_url, category — pas id, image, menu
     const menuId    = mainDish.id_menu   || mainDish.id;
     const imageUrl  = mainDish.image_url || mainDish.image || '/placeholder.jpg';
     const category  = mainDish.category  || mainDish.menu  || '';
 
-    // ✅ CORRECTION 4 : price vient en nombre depuis l'API, pas en string "1500 XAF"
-    // AVANT : parseFloat(mainDish.price.split(' ')[0]) → crash si price est un nombre
     const quantity   = cartItems[menuId] || 0;
     const unitPrice  = parseFloat(mainDish.price) || 0;
     const totalPrice = unitPrice * quantity;
@@ -102,7 +93,6 @@ const CardDescription = () => {
                                     alt={mainDish.title}
                                     className='w-full h-full object-cover md:object-contain group-hover:scale-105 transition-transform duration-500'
                                 />
-                                {/* ✅ CORRECTION : category au lieu de mainDish.menu */}
                                 <div className='absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full text-sm font-medium text-gray-700'>
                                     {category}
                                 </div>
@@ -124,7 +114,6 @@ const CardDescription = () => {
                                     <span className='text-sm font-medium text-gray-500 bg-background-top-light px-3 py-2 rounded-full'>
                                         Prix unitaire
                                     </span>
-                                    {/* ✅ CORRECTION : affichage du prix depuis l'API */}
                                     <span className='font-bold text-2xl text-gray-900'>
                                         {unitPrice.toLocaleString()} {currency}
                                     </span>
@@ -185,7 +174,7 @@ const CardDescription = () => {
                 </div>
             </section>
 
-            {/* Section des autres plats — design intact */}
+            {/* Section des autres plats*/}
             <section className='w-auto px-4 sm:px-8 md:px-16 lg:px-24 max-w-screen-2xl mx-auto py-6 md:py-12'>
                 <div className='mb-8'>
                     <h2 className='text-3xl font-bold text-gray-900 text-center mb-2 font-outfit'>
@@ -196,7 +185,6 @@ const CardDescription = () => {
 
                 <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6'>
                     {otherMenus
-                        // ✅ CORRECTION : filtrer par id_menu et non par id
                         .filter((card) => (card.id_menu || card.id) !== menuId)
                         .slice(0, 6)
                         .map((card) => (

@@ -46,7 +46,6 @@ function App() {
         </Route>
       </Routes>
       
-      {/* ✅ AdminForm DOIT être en dehors des Routes */}
       <AdminForm />
     </div>
   )

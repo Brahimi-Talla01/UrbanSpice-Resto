@@ -81,7 +81,7 @@ export const MenuProvider = ({ children }) => {
         }
     };
 
-    // ── PUBLIER / DÉPUBLIER ───────────────────────────────────────
+    //  PUBLIER / DÉPUBLIER 
     const togglePublish = async (id_menu, is_published) => {
         try {
             const response = await togglePublishMenu(id_menu, is_published);
@@ -95,7 +95,6 @@ export const MenuProvider = ({ children }) => {
         }
     };
 
-    // ── SUPPRIMER UN MENU ─────────────────────────────────────────
     const deleteMenu = async (id_menu) => {
         try {
             const response = await apiDeleteMenu(id_menu);
@@ -109,7 +108,7 @@ export const MenuProvider = ({ children }) => {
         }
     };
 
-    // ── FORMULAIRE ────────────────────────────────────────────────
+    // FORMULAIRE
     const openEditForm = (menu) => {
         setEditingMenu(menu);
         setIsFormOpen(true);
@@ -120,7 +119,7 @@ export const MenuProvider = ({ children }) => {
         setEditingMenu(null);
     };
 
-    // ── COMMANDES ─────────────────────────────────────────────────
+    // COMMANDES
     const toggleOrder = (id) => {
         setOrder((prev) =>
             prev.map((item) =>
@@ -133,7 +132,7 @@ export const MenuProvider = ({ children }) => {
         setOrder((prev) => prev.filter((item) => item.id !== id));
     };
 
-    // ── RÉSERVATIONS ──────────────────────────────────────────────
+    // RÉSERVATIONS
     const toggleReservation = (id) => {
         SetReser((prev) =>
             prev.map((item) =>
@@ -146,7 +145,7 @@ export const MenuProvider = ({ children }) => {
         SetReser((prev) => prev.filter((item) => item.id !== id));
     };
 
-    // ── SERVICES ──────────────────────────────────────────────────
+    // SERVICES
     const toggleService = (id) => {
         setService((prev) =>
             prev.map((item) =>
@@ -159,7 +158,7 @@ export const MenuProvider = ({ children }) => {
         setService((prev) => prev.filter((item) => item.id !== id));
     };
 
-    // ── CHEFS ─────────────────────────────────────────────────────
+    // CHEFS
     const toggleChef = (id) => {
         setChef((prev) =>
             prev.map((item) =>
@@ -172,7 +171,7 @@ export const MenuProvider = ({ children }) => {
         setChef((prev) => prev.filter((item) => item.id !== id));
     };
 
-    // ── TÉMOIGNAGES ───────────────────────────────────────────────
+    // TÉMOIGNAGES
     const toggleTestimony = (id) => {
         setTestimony((prev) =>
             prev.map((item) =>

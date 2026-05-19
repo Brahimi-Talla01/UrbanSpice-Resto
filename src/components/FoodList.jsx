@@ -3,7 +3,7 @@ import { ShoppingCart, Heart, Star } from 'lucide-react';
 import { useContext, useState } from 'react';
 import { StoreContext } from '../contexts/StoreContext';
 import { useNavigate } from 'react-router-dom';
-import { updateMenuRating } from '../../services/menuApi'; // ✅ Import API rating
+import { updateMenuRating } from '../../services/menuApi';
 import { toast } from 'react-toastify';
 
 const FoodList = ({ card, id }) => {
@@ -21,7 +21,7 @@ const FoodList = ({ card, id }) => {
         navigate(`/card-description/${menuId}`);
     };
 
-    // ✅ Fonction pour mettre à jour la note
+    // mettre à jour la note
     const handleRating = async (newRating) => {
         if (isRating) return; // Éviter les clics multiples
         
@@ -31,7 +31,7 @@ const FoodList = ({ card, id }) => {
             
             if (response.success) {
                 toast.success(`Note mise à jour : ${newRating}/5 ⭐`);
-                // ✅ Mettre à jour localement pour un affichage immédiat
+                // Mettre à jour localement pour un affichage immédiat
                 card.rating = newRating;
                 
             } else {
@@ -45,7 +45,7 @@ const FoodList = ({ card, id }) => {
         }
     };
 
-    // ✅ Composant Etoile cliquable
+    // Composant Etoile cliquable
     const StarRating = ({ rating, onRate, size = 14, disabled = false }) => {
         return (
             <div className="flex items-center gap-0.5">
@@ -120,7 +120,7 @@ const FoodList = ({ card, id }) => {
                 <div className='px-2 py-1 rounded-full bg-background-top-light'>
                     <h1 className='text-lg font-outfit'>{category}</h1>
                 </div>
-                {/* ✅ Étoiles cliquables */}
+                {/* Étoiles cliquables */}
                 <StarRating 
                     rating={currentRating} 
                     onRate={handleRating}

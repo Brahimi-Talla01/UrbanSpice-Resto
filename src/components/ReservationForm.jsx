@@ -229,7 +229,7 @@ const ReservationForm = () => {
                                     >
                                         <span className='flex items-center justify-center gap-2'>
                                             {isSubmitting ? (
-                                                <>⏳ Envoi en cours...</>
+                                                <> Envoi en cours...</>
                                             ) : (
                                                 <>
                                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

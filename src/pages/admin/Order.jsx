@@ -213,9 +213,9 @@ const Order = () => {
                                                 </td>
                                                 <td className='px-4 py-4'>
                                                     {order.is_completed == 1 ? (
-                                                        <span className='px-2 py-1 text-xs rounded-full bg-green-100 text-green-700'>✅ Résolue</span>
+                                                        <span className='px-2 py-1 text-xs rounded-full bg-green-100 text-green-700'> Résolue</span>
                                                     ) : (
-                                                        <span className='px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-700'>⏳ En attente</span>
+                                                        <span className='px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-700'> En attente</span>
                                                     )}
                                                 </td>
                                                 <td className='px-4 py-4 text-sm text-gray-500'>
@@ -284,7 +284,7 @@ const Order = () => {
                                                                         <p><span className='text-gray-500'>Date:</span> {new Date(order.created_at).toLocaleString('fr-FR')}</p>
                                                                         <p><span className='text-gray-500'>Nombre d'articles:</span> {order.total_item || items.length}</p>
                                                                         <p><span className='text-gray-500'>Total:</span> <span className='font-semibold text-yellow-600'>{Number(order.total_amount).toLocaleString('fr-FR')} {order.currency || 'XAF'}</span></p>
-                                                                        <p><span className='text-gray-500'>Statut:</span> {order.is_completed == 1 ? 'Résolue ✅' : 'En attente ⏳'}</p>
+                                                                        <p><span className='text-gray-500'>Statut:</span> {order.is_completed == 1 ? 'Résolue ' : 'En attente'}</p>
                                                                     </div>
                                                                 </div>
                                                             </div>

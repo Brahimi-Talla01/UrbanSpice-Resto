@@ -1,4 +1,3 @@
-// frontend/src/pages/admin/Chefs.jsx
 import { useState, useEffect } from "react";
 import { useAdminForm } from "../../contexts/AdminFormContext";
 import ChefTableItem from "../../components/admin/ChefTableItem";
@@ -37,17 +36,14 @@ const Chefs = () => {
     await loadChefs();
   };
 
-  // Ajouter un chef
   const handleAddChef = () => {
     openForm('chef');
   };
 
-  // Modifier un chef
   const handleEditChef = (chef) => {
     openForm('chef', chef);
   };
 
-  // Activer/Désactiver un chef
   const handleToggleActive = async (id_chef, currentStatus) => {
     try {
       const newStatus = currentStatus === 1 ? 0 : 1;
@@ -65,7 +61,6 @@ const Chefs = () => {
     }
   };
 
-  // Supprimer un chef
   const handleDelete = async (id_chef) => {
     if (!window.confirm("Supprimer ce chef ?")) return;
     

@@ -5,12 +5,12 @@ import { ToastContainer } from 'react-toastify';
 
 const FoodDisplay = () => {
 
-    const [showFilters, setShowFilters]   = useState(false);
-    const [menuFilter, setMenuFilter]     = useState("All");
-    const [minPrice, setMinPrice]         = useState("");
-    const [maxPrice, setMaxPrice]         = useState("");
-    const [menus, setMenus]               = useState([]);
-    const [loading, setLoading]           = useState(true);
+    const [showFilters, setShowFilters] = useState(false);
+    const [menuFilter, setMenuFilter] = useState("All");
+    const [minPrice, setMinPrice] = useState("");
+    const [maxPrice, setMaxPrice] = useState("");
+    const [menus, setMenus] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     const handleChange = (e) => {
         setMenuFilter(e.target.value);
@@ -44,9 +44,6 @@ const FoodDisplay = () => {
 
     const getFilterMenu = () => {
         return menus.filter((dish) => {
-            // ✅ CORRECTION : l'API retourne 'category', pas 'menu'
-            // AVANT : dish.menu === menuFilter → toujours false car dish.menu n'existe pas
-            // APRÈS : dish.category === menuFilter
             const matchesCategory =
                 menuFilter === "All" || dish.category === menuFilter;
 

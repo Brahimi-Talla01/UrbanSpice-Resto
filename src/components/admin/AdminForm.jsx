@@ -1,4 +1,3 @@
-// frontend/src/components/admin/AdminForm.jsx
 import { useState, useEffect } from "react";
 import { useAdminForm } from "../../contexts/AdminFormContext";
 import { useMenu } from "../../contexts/MenuContext";
@@ -18,7 +17,7 @@ const AdminForm = () => {
 
     // États communs
     const [title, setTitle] = useState("");
-    const [name, setName] = useState("");        // Pour chef et témoignage
+    const [name, setName] = useState(""); 
     const [image, setImage] = useState(null);
     const [preview, setPreview] = useState(null);
     

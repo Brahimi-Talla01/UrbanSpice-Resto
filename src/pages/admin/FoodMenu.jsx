@@ -1,4 +1,3 @@
-// frontend/src/pages/admin/FoodMenu.jsx
 import { useState } from "react";
 import { useMenu } from "../../contexts/MenuContext";
 import { useAdminForm } from "../../contexts/AdminFormContext";

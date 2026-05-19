@@ -1,4 +1,3 @@
-// Favorite.jsx - Version corrigée avec API dynamique
 import { useContext, useState, useEffect } from 'react';
 import { StoreContext } from '../contexts/StoreContext';
 import { useNavigate } from 'react-router-dom';
@@ -53,7 +52,6 @@ const Favorite = () => {
         toast.success(`${menu.title} ajouté au panier`);
     };
 
-    // Formatage du prix
     const formatPrice = (price, currency = 'XAF') => {
         return `${Number(price).toLocaleString('fr-FR')} ${currency}`;
     };

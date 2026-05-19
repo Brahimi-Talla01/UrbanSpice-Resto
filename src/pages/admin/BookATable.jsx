@@ -29,7 +29,7 @@ const BookATable = () => {
         loadReservations();
     }, []);
 
-    // Pour supprimer une réservation
+    // supprimer une réservation
     const handleArchiveReservation = async (id_reservation) => {
         try {
             const response = await deleteReservation(id_reservation);
@@ -46,7 +46,7 @@ const BookATable = () => {
         }
     };
 
-    // Pour modifier le statut
+    // modifier le statut
     const handleToggleReservation = async (id_reservation, currentStatus) => {
         try {
             const newStatus = currentStatus == 1 ? 0 : 1;
@@ -72,7 +72,6 @@ const BookATable = () => {
         setExpandedReservation(expandedReservation === id_reservation ? null : id_reservation);
     };
 
-    // Filtrer les réservations
     const filteredReservations = reservations.filter((res) => {
         if (filter === "completed") return res.is_completed == 1;
         if (filter === "uncompleted") return res.is_completed == 0;
@@ -255,7 +254,7 @@ const BookATable = () => {
                                             <tr className='bg-gray-50'>
                                                 <td colSpan="7" className='px-6 py-4'>
                                                     <div className='space-y-2'>
-                                                        <h4 className='font-semibold text-gray-900'>📝 Message du client</h4>
+                                                        <h4 className='font-semibold text-gray-900'> Message du client</h4>
                                                         <p className='text-gray-600 italic'>
                                                             {reservation.message || "Aucun message"}
                                                         </p>

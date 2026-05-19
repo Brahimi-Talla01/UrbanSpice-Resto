@@ -32,7 +32,6 @@ const Testimony = () => {
     loadTestimonies();
   }, []);
 
-  // ✅ Rafraîchir automatiquement après fermeture du formulaire
   useEffect(() => {
     if (!isFormOpen) {
       // Formulaire vient d'être fermé, on recharge
@@ -45,17 +44,14 @@ const Testimony = () => {
     await loadTestimonies();
   };
 
-  // Ajouter un témoignage - ✅ sans setTimeout
   const handleAddTestimony = () => {
     openForm('temoignage');
   };
 
-  // Modifier un témoignage
   const handleEditTestimony = (testimony) => {
     openForm('temoignage', testimony);
   };
 
-  // Activer/Désactiver un témoignage - ✅ avec rafraîchissement immédiat
   const handleToggleActive = async (id_temoignage, currentStatus) => {
     try {
       const newStatus = currentStatus === 1 ? 0 : 1;
@@ -63,7 +59,7 @@ const Testimony = () => {
       
       if (response.success) {
         toast.success(response.message || "Statut modifié");
-        await loadTestimonies(); // ✅ Rechargement immédiat
+        await loadTestimonies();
       } else {
         toast.error(response.message || "Erreur lors du changement de statut");
       }
@@ -73,7 +69,7 @@ const Testimony = () => {
     }
   };
 
-  // Supprimer un témoignage - ✅ avec rafraîchissement immédiat
+  // Supprimer un témoignage
   const handleDelete = async (id_temoignage) => {
     if (!window.confirm("Supprimer ce témoignage ?")) return;
     
@@ -81,7 +77,7 @@ const Testimony = () => {
       const response = await deleteTestimony(id_temoignage);
       if (response.success) {
         toast.success("Témoignage supprimé");
-        await loadTestimonies(); // ✅ Rechargement immédiat
+        await loadTestimonies();
       } else {
         toast.error(response.message || "Erreur lors de la suppression");
       }

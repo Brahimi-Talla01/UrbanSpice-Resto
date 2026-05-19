@@ -43,11 +43,8 @@ const StoreContextProvider = (props) => {
     /**
      * Vérifier si l'utilisateur a une session active
      */
-   // StoreContext.jsx - Version corrigée de checkUserSession
-
     const checkUserSession = async () => {
         try {
-            // ✅ Utiliser le bon endpoint avec module=auth&action=check
             const response = await fetch(
                 'http://localhost/UrbanSpice-Resto/backend/index.php?module=auth&action=check',
                 {
@@ -58,9 +55,8 @@ const StoreContextProvider = (props) => {
             );
 
             const data = await response.json();
-            console.log('Check session response:', data); // Pour debug
+            console.log('Check session response:', data);
 
-            // ✅ Adapter selon la structure de ta réponse
             if (data.authenticated === true && data.user) {
                 setUser({
                     id_user: data.user.id,
@@ -102,7 +98,6 @@ const StoreContextProvider = (props) => {
      */
     const Register = async (userData) => {
         try {
-            // ✅ CHANGEMENT: utiliser authAPI.register()
             const data = await authAPI.register(userData);
             
             if (data.success) {
@@ -128,7 +123,6 @@ const StoreContextProvider = (props) => {
                 setUser(data.user);
                 localStorage.setItem('user', JSON.stringify(data.user));
                 
-                // ✅ Vérifier immédiatement la session
                 const checkResult = await authAPI.check();
                 console.log('Session vérifiée après login:', checkResult);
                 
@@ -147,7 +141,6 @@ const StoreContextProvider = (props) => {
      */
     const logout = async () => {
         try {
-            // ✅ CHANGEMENT: utiliser authAPI.logout()
             await authAPI.logout();
             setUser(null);
             localStorage.removeItem('user');
@@ -158,10 +151,6 @@ const StoreContextProvider = (props) => {
         }
     };
 
-    // ========================================
-    // Fonctions Panier et Favoris (inchangées)
-    // ========================================
-    
     const addToCart = (itemId) => {
         const item = card_menu.find(cart => cart.id === itemId);
         

@@ -1,4 +1,3 @@
-// Card.jsx - Version corrigée avec API dynamique
 import { useContext, useState, useEffect } from 'react';
 import { StoreContext } from '../contexts/StoreContext';
 import { useNavigate } from 'react-router-dom';

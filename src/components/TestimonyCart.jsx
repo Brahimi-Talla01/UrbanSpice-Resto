@@ -1,4 +1,3 @@
-// frontend/src/components/TestimonyCart.jsx
 const TestimonyCart = ({ cart, className = "", style = {} }) => {
     // Adapter les données de l'API à l'affichage
     const name = cart.name || "Client";

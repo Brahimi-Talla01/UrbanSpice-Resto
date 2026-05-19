@@ -103,7 +103,7 @@ const AddMenuForm = () => {
                             : "Menu créé en brouillon."
                 );
 
-                // ✅ Recharger la liste des menus dans le dashboard
+                // Recharger la liste des menus dans le dashboard
                 if (fetchMenus) await fetchMenus();
 
                 // Fermer après 1.2s pour que l'utilisateur voie le message
@@ -140,12 +140,12 @@ const AddMenuForm = () => {
                 {/* Messages */}
                 {error && (
                     <div className="mx-4 mt-4 p-3 bg-red-50 border border-red-300 text-red-700 rounded-lg text-sm">
-                        ❌ {error}
+                         {error}
                     </div>
                 )}
                 {success && (
                     <div className="mx-4 mt-4 p-3 bg-green-50 border border-green-300 text-green-700 rounded-lg text-sm">
-                        ✅ {success}
+                        {success}
                     </div>
                 )}
 
@@ -291,8 +291,8 @@ const AddMenuForm = () => {
                                     </span>
                                     <p className="text-xs text-gray-500 mt-0.5">
                                         {formData.is_published
-                                            ? "✅ Le menu sera visible sur le site public"
-                                            : "📁 Le menu sera sauvegardé en brouillon"}
+                                            ? " Le menu sera visible sur le site public"
+                                            : " Le menu sera sauvegardé en brouillon"}
                                     </p>
                                 </div>
                             </label>
