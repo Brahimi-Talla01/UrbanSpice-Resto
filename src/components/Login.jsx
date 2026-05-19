@@ -10,104 +10,122 @@ const Login = ({ onClose, isShowLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
-  const [loading, setLoading] = useState(false); // Changé à false par défaut
+  const [loading, setLoading] = useState(false); 
 
   const createLoginData = () => {
-    if (password.trim().length <= 0 || email.trim().length <= 0) {
+  // Validation selon le mode
+  if (currState === "Créer un compte") {
+    // Pour l'inscription : nom, email, password requis
+    if (!name.trim() || !email.trim() || !password.trim()) {
       setMessage({
         type: 'error',
-        text: 'veuillez remplir tous les champs'
-      })
-      return null;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email.trim())) {
-      setMessage({
-        type: 'error',
-        text: "Veuillez entrer un email valide"
+        text: 'Veuillez remplir tous les champs'
       });
       return null;
     }
-
-    if (password.trim().length < 6) {
+  } else {
+    // Pour la connexion : email et password requis
+    if (!email.trim() || !password.trim()) {
       setMessage({
         type: 'error',
-        text: "Le mot de passe doit contenir au moins 6 caractères"
+        text: 'Veuillez remplir tous les champs'
       });
       return null;
     }
+  }
 
-    const loginData = {
+  // Validation email
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email.trim())) {
+    setMessage({
+      type: 'error',
+      text: "Veuillez entrer un email valide"
+    });
+    return null;
+  }
+
+  // Validation mot de passe
+  if (password.trim().length < 6) {
+    setMessage({
+      type: 'error',
+      text: "Le mot de passe doit contenir au moins 6 caractères"
+    });
+    return null;
+  }
+
+  // Retourner les données selon le mode
+  if (currState === "Créer un compte") {
+    return {
+      name: name.trim(),
       email: email.trim().toLowerCase(),
-      password: password.trim(),
+      password: password.trim()  
     };
-
-    return loginData;
-  };
+  } else {
+    return {
+      email: email.trim().toLowerCase(),
+      password: password.trim()
+    };
+  }
+};
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const userData = createLoginData();
-    
-    if (!userData) {
-      return;
-    }
+  e.preventDefault();
+  const userData = createLoginData();
+  
+  if (!userData) {
+    return;
+  }
 
-    setLoading(true);
+  setLoading(true);
 
-    try {
-      if (currState === "Créer un compte") {
-        const response = await Register(userData);
-        if (!response) {
-          setMessage({
-            type: 'error',
-            text: "Erreur lors de l'inscription"
-          });
-          return;
-        }
-        setMessage({
-            type: "success",
-            text: "Compte créé avec succès!..."
-        });
-        setTimeout(() => {
-            setCurrState("Se connecter");
-        }, 2000);
-        setName('');
-        setEmail('');
-        setPassword('');
-      } else {
-        const response = await Login(email, password);
-        if (!response) {
-          setMessage({
-            type: 'error',
-            text: "Email ou mot de passe incorrect"
-          });
-          return;
-        }
-        setMessage({
-            type: 'success',
-            text: "Connexion réussie!"
-        });
-        localStorage.setItem("user", JSON.stringify(response.user));
-        setTimeout(() => {
-          if (response.user.role === 'admin') {
-            navigate('/admin');
-          } else {
-            navigate('/');
-          }
-        }, 1000);
-        onClose();
-      }
-    } catch (error) {
+  try {
+    if (currState === "Créer un compte") {
+      // Pour l'inscription, on envoie tout l'objet userData
+      const response = await Register(userData);
+      
       setMessage({
-        type: 'error',
-        text: "Une erreur est survenue: " + error.message
+        type: "success",
+        text: "Compte créé avec succès!..."
       });
-    } finally {
-        setLoading(false);
+      
+      setTimeout(() => {
+        setCurrState("Se connecter");
+        setMessage({ type: '', text: '' }); // Reset du message
+      }, 2000);
+      
+      // Réinitialiser les champs
+      setName('');
+      setEmail('');
+      setPassword('');
+      
+    } else {
+      // Pour la connexion, on envoie email et password séparément
+      const response = await Login(email, password);
+      
+      setMessage({
+        type: 'success',
+        text: "Connexion réussie!"
+      });
+      
+      localStorage.setItem("user", JSON.stringify(response.user));
+      setTimeout(() => {
+        if (response.user.role === 'admin') {
+          navigate('/admin');
+        } else {
+          navigate('/');
+        }
+        onClose();
+      }, 1000);
     }
-  };
+  } catch (error) {
+    setMessage({
+      type: 'error',
+      text: error.message || "Une erreur est survenue"
+    });
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     if (currState === "Se connecter") {

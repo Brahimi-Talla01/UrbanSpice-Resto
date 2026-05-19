@@ -1,34 +1,39 @@
 import { useState, useEffect } from "react";
 import { useMenu } from "../../contexts/MenuContext";
+import { createMenu, updateMenu } from "../../../services/menuApi";
 
 const AddMenuForm = () => {
-    const { addMenu, updateMenu, closeForm, editingMenu } = useMenu();
+    const { closeForm, editingMenu, fetchMenus } = useMenu();
+    const [loading, setLoading] = useState(false);
+    const [error, setError]     = useState(null);
+    const [success, setSuccess] = useState(null);
 
     const [formData, setFormData] = useState({
-        title: "",
-        description: "",
-        category: "Petit-déjeuner",
-        price: "",
-        currency: "XAF",
-        image: null,
+        title:        "",
+        description:  "",
+        category:     "",
+        rating:       0,
+        price:        0,
+        currency:     "XAF",
+        image:        null,
         is_published: false,
     });
     const [preview, setPreview] = useState(null);
 
-    // Charger les données du menu à éditer
+    // Pré-remplir si on est en mode édition
     useEffect(() => {
         if (editingMenu) {
             setFormData({
-                title: editingMenu.title || "",
-                description: editingMenu.description || "",
-                category: editingMenu.category || "Petit-déjeuner",
-                price: editingMenu.price?.toString() || "",
-                currency: editingMenu.currency || "XAF",
-                image: null, 
-                is_published: editingMenu.is_published || false,
+                title:        editingMenu.title        || "",
+                description:  editingMenu.description  || "",
+                category:     editingMenu.category     || "",
+                price:        editingMenu.price        || 0,
+                currency:     editingMenu.currency     || "XAF",
+                rating:       editingMenu.rating       || 0,
+                image:        null,
+                
+                is_published: Number(editingMenu.is_published) === 1,
             });
-            
-            // Si le menu a déjà une image, on l'affiche en preview
             if (editingMenu.image_url) {
                 setPreview(editingMenu.image_url);
             }
@@ -36,66 +41,89 @@ const AddMenuForm = () => {
     }, [editingMenu]);
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
+        const { name, value, type, checked } = e.target;
+        setFormData((prev) => ({
+            ...prev,
+            [name]: type === 'checkbox' ? checked : value
+        }));
     };
 
     const handleImage = (e) => {
         const file = e.target.files[0];
         if (file) {
-            setFormData((prev) => ({ ...prev, image: file, }));
+            setFormData((prev) => ({ ...prev, image: file }));
             setPreview(URL.createObjectURL(file));
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
+        setError(null);
+        setSuccess(null);
 
-        if (editingMenu) {
-            // Mode édition
-            const updatedMenu = {
-                ...editingMenu,
-                title: formData.title,
-                description: formData.description,
-                price: Number(formData.price),
-                currency: formData.currency,
-                image_url: formData.image || editingMenu.image_url,
-                category: formData.category,
-                is_published: formData.is_published,
-                published_at: formData.is_published ? 
-                    (editingMenu.published_at || new Date().toISOString()) : 
-                    null,
-            };
-
-            updateMenu(updatedMenu);
-        } else {
-            // Mode ajout
-            const newMenu = {
-                id: `uuid-${Date.now()}`,
-                title: formData.title,
-                description: formData.description,
-                price: Number(formData.price),
-                currency: formData.currency,
-                image_url: formData.image, 
-                category: formData.category,
-                rating: 0, 
-                is_published: formData.is_published,
-                published_at: formData.is_published ? new Date().toISOString() : null,
-                is_deleted: false,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-            };
-
-            addMenu(newMenu);
+        // Validation côté frontend
+        if (!formData.title.trim()) {
+            setError("Le titre est obligatoire.");
+            setLoading(false);
+            return;
+        }
+        if (!formData.category) {
+            setError("La catégorie est obligatoire.");
+            setLoading(false);
+            return;
         }
 
-        closeForm(); 
+        try {
+            const menuData = {
+                id_menu:      editingMenu?.id_menu || editingMenu?.id,
+                title:        formData.title.trim(),
+                description:  formData.description.trim(),
+                price:        Number(formData.price),
+                currency:     formData.currency,
+                category:     formData.category,
+                rating:       Number(formData.rating),
+                image:        formData.image,
+                is_published: formData.is_published,
+            };
+
+            let response;
+            if (editingMenu) {
+                response = await updateMenu(menuData);
+            } else {
+                response = await createMenu(menuData);
+            }
+
+            if (response.success) {
+                setSuccess(
+                    editingMenu
+                        ? "Menu mis à jour avec succès !"
+                        : formData.is_published
+                            ? "Menu créé et publié avec succès !"
+                            : "Menu créé en brouillon."
+                );
+
+                // ✅ Recharger la liste des menus dans le dashboard
+                if (fetchMenus) await fetchMenus();
+
+                // Fermer après 1.2s pour que l'utilisateur voie le message
+                setTimeout(() => closeForm(), 1200);
+            } else {
+                setError(response.message || "Erreur lors de l'enregistrement.");
+            }
+        } catch (err) {
+            setError(err.message || "Une erreur est survenue. Vérifier la console.");
+            console.error("Erreur formulaire menu:", err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-xl shadow-xl w-full max-w-lg max-h-[95vh] flex flex-col">
-                {/* Header fixe */}
+
+                {/* Header */}
                 <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 flex-shrink-0">
                     <h2 className="text-lg sm:text-xl font-bold text-gray-900">
                         {editingMenu ? "Modifier le menu" : "Ajouter un menu"}
@@ -103,19 +131,32 @@ const AddMenuForm = () => {
                     <button
                         type="button"
                         onClick={closeForm}
-                        className='text-gray-400 hover:text-yellow-500 transition duration-300 cursor-pointer text-2xl sm:text-3xl font-light'
+                        className='text-gray-400 hover:text-yellow-500 transition duration-300 cursor-pointer text-2xl font-light'
                     >
                         &times;
                     </button>
                 </div>
 
-                {/* Contenu scrollable */}
+                {/* Messages */}
+                {error && (
+                    <div className="mx-4 mt-4 p-3 bg-red-50 border border-red-300 text-red-700 rounded-lg text-sm">
+                        ❌ {error}
+                    </div>
+                )}
+                {success && (
+                    <div className="mx-4 mt-4 p-3 bg-green-50 border border-green-300 text-green-700 rounded-lg text-sm">
+                        ✅ {success}
+                    </div>
+                )}
+
+                {/* Formulaire scrollable */}
                 <div className="flex-1 overflow-y-auto p-4 sm:p-6">
-                    <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+                    <form id="menu-form" onSubmit={handleSubmit} className="space-y-4">
+
                         {/* Titre */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Titre *
+                                Titre <span className="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
@@ -123,7 +164,7 @@ const AddMenuForm = () => {
                                 value={formData.title}
                                 onChange={handleChange}
                                 required
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all"
+                                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                                 placeholder="Nom du plat"
                             />
                         </div>
@@ -138,40 +179,42 @@ const AddMenuForm = () => {
                                 value={formData.description}
                                 onChange={handleChange}
                                 rows={3}
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all resize-none"
+                                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-500 focus:border-transparent resize-none"
                                 placeholder="Description du plat..."
                             />
                         </div>
 
-                        {/* Catégorie et Prix en ligne sur desktop */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            {/* Catégorie */}
+                        {/* Catégorie + Prix */}
+                        <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Catégorie
+                                    Catégorie <span className="text-red-500">*</span>
                                 </label>
                                 <select
                                     name="category"
                                     value={formData.category}
                                     onChange={handleChange}
-                                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all"
+                                    required
+                                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-500"
                                 >
+                                    <option value="">-- Choisir --</option>
                                     <option value="Petit-déjeuner">Petit-déjeuner</option>
                                     <option value="Déjeuner">Déjeuner</option>
                                     <option value="Dîner">Dîner</option>
+                                    <option value="Brunch">Brunch</option>
                                     <option value="Boissons">Boissons</option>
                                     <option value="Desserts">Desserts</option>
-                                    <option value="Desserts">Cuisine saine</option>
-                                    <option value="Desserts">Plats principaux</option>
-                                    <option value="Desserts">Cuisine locale</option>
-                                    <option value="Desserts">Cuisine occidentale</option>
+                                    <option value="Plats principaux">Plats principaux</option>
+                                    <option value="Accompagnements">Accompagnements</option>
+                                    <option value="Cuisine saine">Cuisine saine</option>
+                                    <option value="Cuisine locale">Cuisine locale</option>
+                                    <option value="Cuisine occidentale">Cuisine occidentale</option>
+                                    <option value="Cuisine gourmande">Cuisine gourmande</option>
                                 </select>
                             </div>
-
-                            {/* Prix */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Prix *
+                                    Prix <span className="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="number"
@@ -181,22 +224,22 @@ const AddMenuForm = () => {
                                     required
                                     min="0"
                                     step="0.01"
-                                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all"
+                                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-500"
                                     placeholder="0"
                                 />
                             </div>
                         </div>
 
-                        {/* Unité monétaire */}
+                        {/* Devise */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Unité monétaire
+                                Devise
                             </label>
                             <select
                                 name="currency"
                                 value={formData.currency}
                                 onChange={handleChange}
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all"
+                                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-500"
                             >
                                 <option value="XAF">XAF (Franc CFA)</option>
                                 <option value="EUR">EUR (Euro)</option>
@@ -210,71 +253,74 @@ const AddMenuForm = () => {
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Image du plat
                                 {editingMenu && (
-                                    <span className="text-xs text-gray-500 ml-2">
+                                    <span className="text-xs text-gray-400 ml-2">
                                         (laisser vide pour garder l'image actuelle)
                                     </span>
                                 )}
                             </label>
-                            <input 
-                                type="file" 
-                                accept="image/*" 
-                                onChange={handleImage} 
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2 cursor-pointer file:mr-4 file:py-1 file:px-2 file:rounded file:border-0 file:text-sm file:bg-yellow-50 file:text-yellow-700 hover:file:bg-yellow-100 transition-all"
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleImage}
+                                className="w-full border border-gray-300 rounded-lg px-3 py-2 cursor-pointer text-sm"
                             />
                             {preview && (
                                 <div className="mt-3 flex justify-center">
                                     <img
                                         src={preview}
-                                        alt="Preview"
-                                        className="w-24 h-24 sm:w-32 sm:h-32 object-cover rounded-lg border-2 border-gray-200 shadow-sm"
+                                        alt="Aperçu"
+                                        className="w-28 h-28 object-cover rounded-lg border-2 border-gray-200 shadow-sm"
                                     />
                                 </div>
                             )}
                         </div>
 
-                        {/* Options de publication */}
-                        <div className="bg-gray-50 p-3 rounded-lg">
-                            <label className="flex items-center gap-2 cursor-pointer">
+                        {/* Publication */}
+                        <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                            <label className="flex items-center gap-3 cursor-pointer">
                                 <input
                                     type="checkbox"
+                                    name="is_published"
                                     checked={formData.is_published}
-                                    onChange={() =>
-                                        setFormData((prev) => ({
-                                            ...prev,
-                                            is_published: !prev.is_published,
-                                        }))
-                                    }
-                                    className="w-4 h-4 text-yellow-600 border-gray-300 rounded focus:ring-yellow-500"
+                                    onChange={handleChange}
+                                    className="w-4 h-4 accent-yellow-500"
                                 />
-                                <span className="text-sm font-medium text-gray-700">
-                                    Publier directement
-                                </span>
+                                <div>
+                                    <span className="text-sm font-medium text-gray-700">
+                                        Publier directement
+                                    </span>
+                                    <p className="text-xs text-gray-500 mt-0.5">
+                                        {formData.is_published
+                                            ? "✅ Le menu sera visible sur le site public"
+                                            : "📁 Le menu sera sauvegardé en brouillon"}
+                                    </p>
+                                </div>
                             </label>
-                            <p className="text-xs text-gray-500 mt-1 ml-6">
-                                {formData.is_published 
-                                    ? "Le menu sera visible publiquement" 
-                                    : "Le menu sera sauvegardé en brouillon"
-                                }
-                            </p>
                         </div>
+
                     </form>
                 </div>
 
-                {/* Footer avec boutons fixe */}
+                {/* Footer */}
                 <div className="flex justify-end gap-3 p-4 sm:p-6 border-t border-gray-200 bg-gray-50 flex-shrink-0">
                     <button
                         type="button"
                         onClick={closeForm}
-                        className=" cursor-pointer px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-yellow-500 transition-all"
+                        disabled={loading}
+                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all disabled:opacity-50"
                     >
                         Annuler
                     </button>
                     <button
                         type="submit"
-                        onClick={handleSubmit}
-                        className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg hover:from-yellow-600 hover:to-orange-600 focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-all transform hover:scale-105 cursor-pointer"
+                        form="menu-form"
+                        disabled={loading}
+                        className="px-6 py-2 text-sm font-medium text-white bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg hover:from-yellow-600 hover:to-orange-600 transition-all disabled:opacity-50"
                     >
-                        {editingMenu ? "Mettre à jour" : "Enregistrer"}
+                        {loading
+                            ? "En cours..."
+                            : editingMenu ? "Mettre à jour" : "Enregistrer"
+                        }
                     </button>
                 </div>
             </div>

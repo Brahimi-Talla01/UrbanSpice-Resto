@@ -4,15 +4,21 @@ import { ShoppingCart, Heart, Search, Menu, Info, Briefcase, Utensils, Phone, X,
 import { Link } from 'react-router-dom';
 import { StoreContext } from '../contexts/StoreContext';
 import UserProfile from './UserProfile';
+import { getUserProfil } from '../../services/api';
 
 const Navbar = () => {
-    const { getTotalCart, getTotalHeart, setIsShowLogin } = useContext(StoreContext);
+    const { getTotalCart, getTotalHeart, setIsShowLogin, user, setUser, loading } = useContext(StoreContext);
 
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [inputSearchOpen, setInputSearchOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
-    const [isConnected, setIsConnected] = useState(false);
+    // const [isConnected, setIsConnected] = useState(false);
+    // const [loading, setLoading] = useState(true);
+    // // j'ai ajoute ce useState pour verifier la connexion du user
+    // const [user, setUser] = useState(null);
     const [activeSection, setActiveSection] = useState('home');
+
+     const isConnected = !!user;
 
     useEffect(() => {
         const handleScroll = () => {
@@ -68,6 +74,10 @@ const Navbar = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
+    // Fonction pour mettre a jour le profil
+    const handleUpdateUser = (updateUser) => {
+        setUser(updateUser);
+    }
 
     const navItems = [
         { name: 'Accueil', href: '#home' },
@@ -84,7 +94,7 @@ const Navbar = () => {
                 scrolled 
                     ? 'bg-white/90 backdrop-blur-md shadow-lg border-b border-gray-100' 
                     : 'bg-white shadow-sm'
-            }`}>
+                }`}>
                 
                 <div className='w-full flex items-center justify-between relative'>
 
@@ -165,14 +175,20 @@ const Navbar = () => {
 
                         {/* Bouton Login  */}
                         {
-                            !isConnected ? 
+                            /**Affichage conditionnel */
+                            loading ? (
+                                <div className="hidden md:flex items-center gap-2 px-2 py-2 bg-gray-100 rounded-full animate-pulse">
+                                     <div className="w-6 h-6 bg-gray-300 rounded-full"></div>
+                                </div>
+                            ) : !isConnected ? (
                                 <button 
                                     onClick={() => setIsShowLogin(true)} 
                                     className='hidden md:flex items-center cursor-pointer gap-2 px-6 py-2.5 bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white rounded-full font-medium transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl'
                                 >
                                     Se connecter
-                                </button>
-                            : <UserProfile />
+                                </button> ) : (
+                                <UserProfile user={user} />
+                            )
                         }
 
                         {/* Menu mobile */}
@@ -219,7 +235,7 @@ const Navbar = () => {
             {/* Menu mobile sidebar */}
             <div className={`fixed top-0 left-0 h-full w-80 bg-white shadow-2xl transform transition-transform duration-300 z-50 ${
                 mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
-            }`}>
+                }`}>
                 
                 {/* Header du menu mobile */}
                 <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-gradient-to-r from-orange-50 to-yellow-50">
@@ -301,16 +317,33 @@ const Navbar = () => {
                         </div>
                     </Link>
 
-                    <button 
-                        onClick={() => {
-                            setIsShowLogin(true);
-                            setMobileMenuOpen(false);
-                        }} 
-                        className='w-full flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white rounded-xl font-medium transition-all duration-300 transform hover:scale-105'
-                    >
-                        <User className="w-5 h-5" />
-                        Se connecter
-                    </button>
+                    {/* Affichage condition en mode mobile */}
+
+                    {
+                        loading ? (
+                            <div className="w-full flex items-center justify-center gap-2 py-4 bg-gray-100 rounded-xl animate-pulse">
+                                <div className="w-5 h-5 bg-gray-300 rounded-full"></div>
+                                <div className="w-20 h-4 bg-gray-300 rounded"></div>
+                            </div>
+                        ) : !isConnected ? (
+                            <button 
+                                onClick={() => {
+                                    setIsShowLogin(true);
+                                    setMobileMenuOpen(false);
+                                }} 
+                                className='w-full flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white rounded-xl font-medium transition-all duration-300 transform hover:scale-105'
+                            >
+                             <User className="w-5 h-5" />
+                            Se connecter
+                        </button>
+                        ) : (
+                            <div className="w-full flex items-center justify-center gap-6 py-2 bg-green-50 text-green-700 rounded-xl font-medium">
+                                <User className='w-5 h-5'/>
+                                Bonjour, {user.nom_user || 'Utilisateur'}
+                            </div>
+                        )
+                    }
+                    
                 </div>
             </div>
 
@@ -323,6 +356,8 @@ const Navbar = () => {
             {inputSearchOpen && (
                 <div className="fixed inset-0 bg-black/30 z-40" onClick={() => setInputSearchOpen(false)} />
             )}
+
+           
         </>
     );
 };

@@ -9,8 +9,11 @@ import {
   MessageSquareMore, 
 } from 'lucide-react';
 import AdminProfileSection from './AdminProfileSection';
+import { useAuth } from '../../contexts/StoreContext';
 
 const Sidebar = () => {
+  // Recuperation de l'utilisateur depuis le context
+  const { user, loading } = useAuth();
   const links = [
     { name: 'Dashboard', path: '/admin', icon: LayoutDashboard },
     { name: 'Menus', path: '/admin/menu', icon: Utensils },
@@ -100,7 +103,7 @@ const Sidebar = () => {
 
       </div>
 
-      <AdminProfileSection />
+      <AdminProfileSection user={user} loading={loading}/>
 
     </div>
   );

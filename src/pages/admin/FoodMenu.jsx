@@ -1,18 +1,17 @@
+// frontend/src/pages/admin/FoodMenu.jsx
 import { useState } from "react";
 import { useMenu } from "../../contexts/MenuContext";
-import AddMenuForm from "../../components/admin/AddMenuForm";
+import { useAdminForm } from "../../contexts/AdminFormContext";
 import MenuTableItem from "../../components/admin/MenuTableItem";
 
 const FoodMenu = () => {
   const { 
     menus, 
-    isFormOpen, 
-    setIsFormOpen, 
     togglePublish, 
-    deleteMenu, 
-    openEditForm,
-    closeForm 
+    deleteMenu,
   } = useMenu();
+  
+  const { openForm } = useAdminForm(); 
   
   const [filter, setFilter] = useState("all");
 
@@ -22,9 +21,12 @@ const FoodMenu = () => {
     return true;
   });
 
-  // Fonction pour ouvrir le formulaire en mode ajout
   const handleAddMenu = () => {
-    setIsFormOpen(true);
+    openForm('menu');
+  };
+
+  const handleEditMenu = (menu) => {
+    openForm('menu', menu);
   };
 
   return (
@@ -101,25 +103,17 @@ const FoodMenu = () => {
           <tbody>
             {filteredMenus.map((menu, index) => (
               <MenuTableItem
-                key={menu.id}
+                key={menu.id_menu}
                 menu={menu}
                 index={index + 1}
                 togglePublish={togglePublish}
                 deleteMenu={deleteMenu}
-                onEdit={() => openEditForm(menu)}
+                onEdit={() => handleEditMenu(menu)}
               />
             ))}
           </tbody>
         </table>
       </div>
-
-      {/* Formulaire modal */}
-      {isFormOpen && <AddMenuForm />}
-
-      {/* Overlay pour fermer le formulaire */}
-      {isFormOpen && 
-        <div onClick={closeForm} className="fixed inset-0 bg-black/20 z-40" />
-      }
     </div>
   );
 };

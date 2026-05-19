@@ -1,32 +1,29 @@
+// frontend/src/components/admin/ServiceTableItem.jsx
 import { Trash2, Pencil, CheckCircle2, CircleOff } from "lucide-react";
 
-const ServiceTableItem = ({ service, toggleActived, archiveService, onEdit }) => {
-
-    const handleDelete = () => {
-        console.log("Supprimer un service:", service.id);
-        // TODO: requête API + fetchMenu()
-    };
-
-    const handleTogglePublish = () => {
-        console.log("Changer le status:", service.id);
-        // TODO: API (toggle publish) + fetchMenu()
-    };
+const ServiceTableItem = ({ service, index, toggleActived, archiveService, onEdit }) => {
 
     return (
         <tr className="border-b border-gray-200 hover:bg-gray-50">
             
-            {/* Numéro */}
+            {/* Numéro - ✅ Utiliser index au lieu de service.id */}
             <td className="px-6 py-4 font-medium text-gray-800">
-                {service.id}
+                {index}
             </td>
 
-            {/* Image */}
+            {/* Image - ✅ Vérifier si image_url existe */}
             <td className="px-6 py-4">
-                <img 
-                    src={service.image_url} 
-                    alt={service.title} 
-                    className="w-12 h-12 object-cover rounded-md shadow-sm"
-                />
+                {service.image_url ? (
+                    <img 
+                        src={service.image_url} 
+                        alt={service.title} 
+                        className="w-12 h-12 object-cover rounded-md shadow-sm"
+                    />
+                ) : (
+                    <div className="w-12 h-12 bg-gray-100 rounded-md flex items-center justify-center">
+                        <span className="text-gray-400 text-xs">Pas d'image</span>
+                    </div>
+                )}
             </td>
             
             {/* Titre du service */}
@@ -34,49 +31,51 @@ const ServiceTableItem = ({ service, toggleActived, archiveService, onEdit }) =>
                 {service.title}
             </td>
 
-
-            {/* Date de creation du service */}
+            {/* Date de creation du service - ✅ Formater la date */}
             <td className="px-6 py-4 text-gray-600">
-                {service.created_at || "N/A"}
+                {service.created_at ? new Date(service.created_at).toLocaleDateString('fr-FR') : "N/A"}
             </td>
 
             {/* Status */}
             <td className="px-6 py-4">
-                {service.is_actived ? (
-                    <span className="text-xs bg-green-100 text-green-600 rounded-full px-3 py-2">
+                {service.is_actived == 1 ? (
+                    <span className="text-xs bg-green-100 text-green-600 rounded-full px-3 py-1">
                         Activé
                     </span>
                 ) : (
-                    <span className="text-xs bg-gray-100 text-gray-800 rounded-full px-3 py-2">
+                    <span className="text-xs bg-gray-100 text-gray-800 rounded-full px-3 py-1">
                         Non activé
                     </span>
                 )}
             </td>
-
+              
             {/* Actions */}
             <td className="px-6 py-4">
-                <div className="flex items-center justify-between w-full">
+                <div className="flex items-center gap-3">
                     <button 
-                        onClick={() => toggleActived(service.id)} 
-                        className="text-blue-500 cursor-pointer hover:scale-110 transition-all"
+                        onClick={toggleActived} 
+                        className="text-blue-500 cursor-pointer hover:scale-110 transition-all flex items-center gap-1"
                     >
-                        {service.is_actived 
-                            ? <div className="flex items-center gap-1"> <span>Désactivé</span> <CircleOff size={18}/> </div> 
-                            : <div className="flex items-center gap-1"> <span>Activé</span> <CheckCircle2 size={18}/> </div> }
+                        {service.is_actived == 1 ? (
+                            <> <CircleOff size={16}/> <span className="text-xs">Désactiver</span> </>
+                        ) : (
+                            <> <CheckCircle2 size={16}/> <span className="text-xs">Activer</span> </>
+                        )}
                     </button>
 
                     <button
                         onClick={onEdit}
-                        className="flex items-center gap-1 cursor-pointer text-yellow-500 hover:scale-110 transition-all">
-                        <span>Editer</span>
-                        <Pencil size={18}/>
+                        className="flex items-center gap-1 cursor-pointer text-yellow-500 hover:scale-110 transition-all"
+                    >
+                        <Pencil size={16}/>
+                        <span className="text-xs">Modifier</span>
                     </button>
 
                     <button
-                        onClick={() => archiveService(service.id)} 
+                        onClick={archiveService} 
                         className="text-red-500 cursor-pointer hover:scale-110 transition-all"
                     >
-                        <Trash2 size={18}/>
+                        <Trash2 size={16}/>
                     </button>
                 </div>
             </td>

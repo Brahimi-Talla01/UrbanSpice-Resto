@@ -1,24 +1,68 @@
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import FoodList from '../components/FoodList';
 import { useParams, useNavigate } from 'react-router-dom';
 import { StoreContext } from '../contexts/StoreContext';
 import { ToastContainer } from 'react-toastify';
 import ScrollToTopButton from '../components/SrollToTopButton';
+import { getMenuById, getPublishedMenus } from '../../services/menuApi';
 
 const CardDescription = () => {
-    const { addToCart, removeToCart, card_menu, cartItems } = useContext(StoreContext);
+    const { addToCart, removeToCart, cartItems } = useContext(StoreContext);
     const { id } = useParams();
     const navigate = useNavigate();
 
-    const mainDish = card_menu.find((cart) => cart.id === id);
-    console.log('Found dish:', mainDish);
+    const [mainDish, setMainDish]   = useState(null);
+    const [otherMenus, setOtherMenus] = useState([]);
+    const [loading, setLoading]     = useState(true);
+
+    useEffect(() => {
+        const loadDish = async () => {
+            try {
+                setLoading(true);
+
+                // ✅ CORRECTION 1 : charger le plat depuis l'API au lieu de card_menu statique
+                // AVANT : const mainDish = card_menu.find((cart) => cart.id === id)
+                //         → card_menu est statique, les menus créés depuis l'admin n'y sont pas
+                //         → find retournait undefined → "Plat non trouvé"
+                const response = await getMenuById(id);
+                if (response.success && response.menu) {
+                    setMainDish(response.menu);
+                }
+
+                // ✅ CORRECTION 2 : charger les autres menus depuis l'API
+                const othersResponse = await getPublishedMenus();
+                if (othersResponse.success && othersResponse.menus) {
+                    setOtherMenus(othersResponse.menus);
+                }
+            } catch (error) {
+                console.error("Erreur chargement plat:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadDish();
+        // Remonter en haut quand l'id change (navigation entre plats)
+        window.scrollTo(0, 0);
+    }, [id]);
+
+    if (loading) {
+        return (
+            <div className='min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-gray-100'>
+                <div className='text-center'>
+                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-yellow-500 mx-auto mb-4"></div>
+                    <p className='text-gray-500'>Chargement du plat...</p>
+                </div>
+            </div>
+        );
+    }
 
     if (!mainDish) {
         return (
             <div className='min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-gray-100'>
                 <div className='text-center'>
                     <h1 className='text-2xl font-bold text-gray-900 mb-4'>Plat non trouvé</h1>
-                    <button 
+                    <button
                         onClick={() => navigate('/')}
                         className='px-6 py-3 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition-colors'
                     >
@@ -29,26 +73,38 @@ const CardDescription = () => {
         );
     }
 
-    const quantity = cartItems[mainDish.id] || 0;
-    
-    const totalPrice = parseFloat(mainDish.price.split(' ')[0]) * quantity;
+    // ✅ CORRECTION 3 : normaliser les champs API → composant
+    // L'API retourne id_menu, image_url, category — pas id, image, menu
+    const menuId    = mainDish.id_menu   || mainDish.id;
+    const imageUrl  = mainDish.image_url || mainDish.image || '/placeholder.jpg';
+    const category  = mainDish.category  || mainDish.menu  || '';
+
+    // ✅ CORRECTION 4 : price vient en nombre depuis l'API, pas en string "1500 XAF"
+    // AVANT : parseFloat(mainDish.price.split(' ')[0]) → crash si price est un nombre
+    const quantity   = cartItems[menuId] || 0;
+    const unitPrice  = parseFloat(mainDish.price) || 0;
+    const totalPrice = unitPrice * quantity;
+    const currency   = mainDish.currency || 'XAF';
 
     return (
         <div className='min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100'>
-            {/* Section du plat principal */}
+
+            {/* Section du plat principal — design intact */}
             <section className='w-auto px-4 sm:px-8 md:px-16 lg:px-24 max-w-screen-2xl mx-auto py-6 md:py-12'>
                 <div className='bg-white rounded-md shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100'>
                     <div className='grid grid-cols-1 lg:grid-cols-2 gap-6 p-4'>
+
                         {/* Image du plat */}
                         <div className='relative group'>
                             <div className='aspect-video lg:aspect-square rounded-md overflow-hidden bg-background-top-light'>
-                                <img 
-                                    src={mainDish.image} 
+                                <img
+                                    src={imageUrl}
                                     alt={mainDish.title}
-                                    className='w-full h-full object-cover md:object-contain group-hover:scale-105 transition-transform duration-500' 
+                                    className='w-full h-full object-cover md:object-contain group-hover:scale-105 transition-transform duration-500'
                                 />
+                                {/* ✅ CORRECTION : category au lieu de mainDish.menu */}
                                 <div className='absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full text-sm font-medium text-gray-700'>
-                                    {mainDish.menu}
+                                    {category}
                                 </div>
                             </div>
                         </div>
@@ -59,7 +115,7 @@ const CardDescription = () => {
                                 <h1 className='text-3xl lg:text-4xl font-bold text-gray-900 mb-3 font-outfit'>
                                     {mainDish.title}
                                 </h1>
-                                
+
                                 <p className='text-gray-600 text-lg leading-relaxed mb-4'>
                                     {mainDish.description}
                                 </p>
@@ -68,8 +124,9 @@ const CardDescription = () => {
                                     <span className='text-sm font-medium text-gray-500 bg-background-top-light px-3 py-2 rounded-full'>
                                         Prix unitaire
                                     </span>
+                                    {/* ✅ CORRECTION : affichage du prix depuis l'API */}
                                     <span className='font-bold text-2xl text-gray-900'>
-                                        {mainDish.price}
+                                        {unitPrice.toLocaleString()} {currency}
                                     </span>
                                 </div>
                             </div>
@@ -78,22 +135,22 @@ const CardDescription = () => {
                             <div className='space-y-4'>
                                 <div className='flex items-center justify-between bg-background-top-light/80 rounded-md p-4'>
                                     <span className='font-medium text-gray-700'>Quantité</span>
-                                    
+
                                     <div className='flex items-center gap-3'>
                                         <button
-                                            onClick={() => removeToCart(mainDish.id)}
+                                            onClick={() => removeToCart(menuId)}
                                             disabled={quantity <= 0}
                                             className='w-12 h-12 bg-yellow-500 cursor-pointer text-white text-xl font-bold rounded-md hover:bg-yellow-600 hover:scale-105 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:hover:scale-100 transition-all duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-yellow-300'
                                         >
                                             -
                                         </button>
-                                        
+
                                         <div className='bg-white border-2 border-yellow-200 rounded-xl px-3 py-1 min-w-[4rem] text-center shadow-sm'>
                                             <span className='text-2xl font-bold text-gray-800'>{quantity}</span>
                                         </div>
-                                        
-                                        <button 
-                                            onClick={() => addToCart(mainDish.id)}
+
+                                        <button
+                                            onClick={() => addToCart(menuId)}
                                             className='w-12 h-12 bg-yellow-500 text-white text-xl font-bold rounded-md cursor-pointer hover:bg-yellow-600 hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-yellow-300'
                                         >
                                             +
@@ -101,22 +158,22 @@ const CardDescription = () => {
                                     </div>
                                 </div>
 
-                                {/* Prix total et bouton d'ajout */}
+                                {/* Prix total */}
                                 {quantity > 0 && (
                                     <div className='bg-gradient-to-r from-yellow-50 to-orange-50 rounded-md p-4 border border-yellow-200'>
                                         <div className='flex items-center justify-between mb-3'>
                                             <span className='font-medium text-gray-700'>Total</span>
                                             <span className='font-bold text-2xl text-gray-900'>
-                                                {totalPrice.toLocaleString()} XAF
+                                                {totalPrice.toLocaleString()} {currency}
                                             </span>
                                         </div>
                                     </div>
                                 )}
 
-                                {/* Bouton d'ajout au panier si quantity = 0 */}
+                                {/* Bouton ajouter au panier si quantity = 0 */}
                                 {quantity === 0 && (
                                     <button
-                                        onClick={() => addToCart(mainDish.id)}
+                                        onClick={() => addToCart(menuId)}
                                         className='w-full py-4 rounded-md cursor-pointer font-bold text-lg transition-all duration-300 focus:outline-none focus:ring-4 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-1 focus:ring-yellow-300'
                                     >
                                         Ajouter au panier
@@ -128,7 +185,7 @@ const CardDescription = () => {
                 </div>
             </section>
 
-            {/* Section des autres plats */}
+            {/* Section des autres plats — design intact */}
             <section className='w-auto px-4 sm:px-8 md:px-16 lg:px-24 max-w-screen-2xl mx-auto py-6 md:py-12'>
                 <div className='mb-8'>
                     <h2 className='text-3xl font-bold text-gray-900 text-center mb-2 font-outfit'>
@@ -138,25 +195,25 @@ const CardDescription = () => {
                 </div>
 
                 <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6'>
-                    {card_menu
-                        .filter((card) => card.id !== mainDish.id) 
-                        .slice(0, 6) 
+                    {otherMenus
+                        // ✅ CORRECTION : filtrer par id_menu et non par id
+                        .filter((card) => (card.id_menu || card.id) !== menuId)
+                        .slice(0, 6)
                         .map((card) => (
                             <FoodList
-                                key={card.id}
+                                key={card.id_menu || card.id}
                                 card={card}
-                                id={card.id}
-                            /> 
+                                id={card.id_menu || card.id}
+                            />
                         ))}
                 </div>
             </section>
 
-            {/* Navigate to top */}
             <ScrollToTopButton />
 
-            <ToastContainer 
+            <ToastContainer
                 position="top-right"
-                autoClose ={2000}
+                autoClose={2000}
                 hideProgressBar={false}
                 newestOnTop={false}
                 closeOnClick

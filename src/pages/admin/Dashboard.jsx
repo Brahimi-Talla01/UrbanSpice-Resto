@@ -11,8 +11,13 @@ import {
   Package
 } from 'lucide-react';
 import DashboardChart from '../../components/admin/DashboardChart';
+import { useEffect } from 'react';
+// import { useNavigate } from 'react-router-dom';
+// import { checkSession } from '../../../services/api';
 
 const Dashboard = () => {
+  // const [admin, setAdmin] = useState(null);
+
   // Données mockées pour le dashboard
   const statsCards = [
     {
@@ -102,6 +107,40 @@ const Dashboard = () => {
       default: return 'bg-gray-100 text-gray-800';
     }
   };
+
+  // const navigate = useNavigate();
+
+  /**
+   * VERIFIER SESSION ET AUTORISATION
+   */
+
+  // useEffect(() => {
+  //   const verifySession = async() => {
+  //     try {
+  //       const verifierSession = await checkSession();
+
+  //       //Verifier si connecter ou pas
+  //       if (!Response.authenticated) {
+  //         navigate('/login');
+  //         return;
+  //       }
+
+  //       //Verifier que c'est un admin
+  //       if (response.user.role !== 'admin') {
+  //         navigate('/');
+  //         return;
+  //       }
+
+  //       setAdmin(response.user);
+  //       //await loadUser();
+  //     } catch (error) {
+  //       console.error('Erreur de session:', error);
+  //       navigate('/login');
+  //     }
+
+  //   }
+  //   verifySession()
+  // }, [])
 
   return (
     <div className=' flex-1 p-6 bg-gray-50 min-h-screen'>

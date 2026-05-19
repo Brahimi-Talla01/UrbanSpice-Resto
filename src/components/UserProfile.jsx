@@ -1,14 +1,30 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useContext } from 'react';
 import { User, Settings, LogOut, Edit3, Check, X, Mail, Lock } from 'lucide-react';
+import { getAllUser, getUserProfil, updateProfile, logout } from '../../services/api';
+import { StoreContext } from '../contexts/StoreContext';
+import { useNavigate } from 'react-router-dom';
 
 const UserProfileToggle = ({ user, onLogout, onUpdateUser }) => {
+  const {refreshUser} = useContext(StoreContext);
   const [isOpen, setIsOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedUser, setEditedUser] = useState({
-    name: user?.name || '',
-    email: user?.email || '',
+    name: user?.name || user?.nom_user || '',
+    email: user?.email || user?.email_user || '',
     password: ''
   });
+
+   // On synchroniser avec les props user quand elles changent
+  useEffect(() => {
+    setEditedUser({
+      name: user?.name || user?.nom_user || '',
+      email: user?.email || user?.email_user || '',
+      password: ''
+    });
+  }, [user]);
+
+  const navigate = useNavigate();
+
   const [showPassword, setShowPassword] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -25,13 +41,37 @@ const UserProfileToggle = ({ user, onLogout, onUpdateUser }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  /**
+   * MISE A JOUR UTILISATEUR
+   * @param {*} e 
+   */
+
   const handleSaveChanges = async (e) => {
     e.preventDefault();
+    // setEditedUser(true);
+     
     try {
       // Appel de l'API  ici
-      await onUpdateUser(editedUser);
-      setIsEditing(false);
+      const response = await updateProfile(editedUser);
+
+      if (response.success && response.user) {
+        setEditedUser({
+          name: response.user.nom_user || '',
+          email: response.user.email_user || '',
+          password: ''
+        });
+        setIsEditing(false)
+      }
+
+      onUpdateUser(response.user)
+      //Effacer le message apres 3 second
+      // setTimeout(() => {
+      //   setMessage({type: '', text: ''});
+      // }, 3000);
+
+      //setIsEditing(false);
       setShowPassword(false);
+      alert('Profil mis à jour avec succès !');
     } catch (error) {
       console.error('Erreur lors de la mise à jour:', error);
     }
@@ -39,16 +79,41 @@ const UserProfileToggle = ({ user, onLogout, onUpdateUser }) => {
 
   const handleCancelEdit = () => {
     setEditedUser({
-      name: user?.name || '',
-      email: user?.email || '',
+      nom_user: user?.nom_user || '',
+      email_user: user?.email_user || '',
       password: ''
     });
     setIsEditing(false);
     setShowPassword(false);
   };
 
+
+  /**
+   * DECONNEXION UTILISATEUR
+   * @param {*} name 
+   * @returns 
+   */
+
+  const handleLogout = async() => {
+    try {
+      await logout();
+      // Mettre a jour le user immediatement apres l'action deconnexion
+      await refreshUser();
+      navigate('/');
+    } catch (error) {
+      console.error("Erreur lors de la deconnexion", error);
+    }
+  }
+
   const getInitials = (name) => {
-    return name
+
+    const userName = user?.name || user?.nom_user || '';
+
+    if (!userName || typeof userName !== 'string') {
+      return 'U';
+    }
+
+    return userName
       .split(' ')
       .map(n => n[0])
       .join('')
@@ -56,7 +121,15 @@ const UserProfileToggle = ({ user, onLogout, onUpdateUser }) => {
       .slice(0, 2);
   };
 
-  if (!user) return null;
+  const hasUserData = user && (user.name || user.nom_user);
+
+  if (!hasUserData) {
+    console.warn('UserProfileToggle: Donnees utilisateur manquantes:', user);
+    return null
+  }
+
+  const displayName = user?.name || user?.nom_user || "Utilisateur"
+  const displayEmail = user?.email || user?.email_user || ''
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -66,11 +139,11 @@ const UserProfileToggle = ({ user, onLogout, onUpdateUser }) => {
         className="flex cursor-pointer items-center space-x-2 p-2 rounded-full hover:bg-yellow-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
       >
         <div className="w-10 h-10 bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-full flex items-center justify-center font-semibold text-sm shadow-lg">
-          {getInitials(user.name)}
+          {getInitials(displayName)}
         </div>
         <div className="hidden md:block text-left">
-          <p className="text-sm font-medium text-gray-900">{user.name}</p>
-          <p className="text-xs text-gray-500">En ligne</p>
+          <p className="text-sm font-medium text-gray-900">{displayName}</p>
+          <p className="text-xs text-gray-500">{user.role === 'admin' ? 'admin' : 'Utilisateur'} en ligne </p>
         </div>
       </button>
 
@@ -81,11 +154,11 @@ const UserProfileToggle = ({ user, onLogout, onUpdateUser }) => {
           <div className="p-4 bg-gradient-to-r from-yellow-50 to-orange-50 border-b border-gray-100">
             <div className="flex items-center space-x-3">
               <div className="w-12 h-12 bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-full flex items-center justify-center font-semibold shadow-lg">
-                {getInitials(user.name)}
+                {getInitials(displayName)}
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-gray-900">{user.name}</h3>
-                <p className="text-sm text-gray-600">{user.email}</p>
+                <h3 className="font-semibold text-gray-900">{displayName}</h3>
+                <p className="text-sm text-gray-600">{displayEmail}</p>
               </div>
               <button
                 onClick={() => setIsEditing(!isEditing)}
@@ -138,6 +211,7 @@ const UserProfileToggle = ({ user, onLogout, onUpdateUser }) => {
                 />
               </div>
 
+            {/* MISER A JOUR UTILISATEUR*/}
               <div className="flex space-x-2 pt-2">
                 <button
                   onClick={handleSaveChanges}
@@ -170,9 +244,9 @@ const UserProfileToggle = ({ user, onLogout, onUpdateUser }) => {
               </button>
 
               <div className="border-t border-gray-100 my-2"></div>
-
+            {/* DECONNEXION UTILISATEUR */}
               <button
-                onClick={onLogout}
+                onClick={handleLogout}
                 className="w-full flex cursor-pointer items-center px-4 py-3 text-left text-red-600 hover:bg-red-50 transition-colors duration-200"
               >
                 <LogOut className="w-5 h-5 mr-3" />
@@ -191,11 +265,8 @@ const UserProfileToggle = ({ user, onLogout, onUpdateUser }) => {
 };
 
 // Composant de démonstration
-const UserProfile = () => {
-  const [user, setUser] = useState({
-    name: "Ibrahim Ng",
-    email: "brahim@gmail.com"
-  });
+const UserProfile = ({user}) => {
+  // const [user, setUser] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(true);
 
   const handleUpdateUser = async (updatedData) => {
@@ -204,8 +275,9 @@ const UserProfile = () => {
       setTimeout(() => {
         setUser(prevUser => ({
           ...prevUser,
-          name: updatedData.name,
-          email: updatedData.email
+          nom_user: user?.nom_user || '',
+          email_user: user?.email_user || '',
+          password: ''
         }));
         resolve();
       }, 1000);

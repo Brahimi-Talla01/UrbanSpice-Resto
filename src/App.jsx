@@ -17,6 +17,7 @@ import BookATable from './pages/admin/BookATable';
 import Service from './pages/admin/Service';
 import Chefs from './pages/admin/Chefs';
 import Testimony from './pages/admin/Testimony';
+import AdminForm from './components/admin/AdminForm';
 
 function App() {
 
@@ -25,7 +26,8 @@ function App() {
   return (
     <div className='flex flex-col items-center justify-between gap-0 p-0 m-0'>
 
-      {isShowLogin && <Login onClose={() =>setIsShowLogin(false)} isShowLogin={isShowLogin} />}
+      {isShowLogin && <Login onClose={() => setIsShowLogin(false)} isShowLogin={isShowLogin} />}
+      
       <Routes>
         <Route path='/' element={<MainLayout><Home /></MainLayout>} />
         <Route path='/card' element={<MainLayout><Card /></MainLayout>} />
@@ -43,6 +45,9 @@ function App() {
           <Route path='temoignage' element={<Testimony />} />
         </Route>
       </Routes>
+      
+      {/* ✅ AdminForm DOIT être en dehors des Routes */}
+      <AdminForm />
     </div>
   )
 }

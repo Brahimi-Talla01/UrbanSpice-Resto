@@ -1,97 +1,102 @@
+// frontend/src/components/admin/TestimonyTableItem.jsx
 import { Trash2, Pencil, CheckCircle2, CircleOff } from "lucide-react";
 
-const TestimonyTableItem = ({ testimonie, toggleTes, archived, onEdit }) => {
+const TestimonyTableItem = ({ testimonie, index, toggleTes, archived, onEdit }) => {
 
-    const handleDelete = () => {
-        console.log("Supprimer un service:", testimonie.id);
-        // TODO: requête API + fetchMenu()
-    };
+  return (
+    <tr className="border-b border-gray-200 hover:bg-gray-50">
+      
+      {/* Numéro */}
+      <td className="px-6 py-4 font-medium text-gray-800">
+        {index}
+      </td>
 
-    const handleTogglePublish = () => {
-        console.log("Changer le status:", testimonie.id);
-        // TODO: API (toggle publish) + fetchMenu()
-    };
+      {/* Image */}
+      <td className="px-6 py-4">
+        {testimonie.image_url ? (
+          <img 
+            src={testimonie.image_url} 
+            alt={testimonie.name} 
+            className="w-12 h-12 object-cover rounded-md shadow-sm"
+          />
+        ) : (
+          <div className="w-12 h-12 bg-gray-100 rounded-md flex items-center justify-center">
+            <span className="text-gray-400 text-xs">Pas d'image</span>
+          </div>
+        )}
+      </td>
+      
+      {/* Nom du commanditaire */}
+      <td className="px-6 py-4 font-medium text-gray-800">
+        {testimonie.name}
+      </td>
 
-    return (
-        <tr className="border-b border-gray-200 hover:bg-gray-50">
-            
-            {/* Numéro */}
-            <td className="px-6 py-4 font-medium text-gray-800">
-                {testimonie.id}
-            </td>
+      {/* Profession du commanditaire */}
+      <td className="px-6 py-4 text-gray-600">
+        {testimonie.profession || "N/A"}
+      </td>
 
-            {/* Image */}
-            <td className="px-6 py-4">
-                <img 
-                    src={testimonie.image_url} 
-                    alt={testimonie.title} 
-                    className="w-12 h-12 object-cover rounded-md shadow-sm"
-                />
-            </td>
-            
-            {/* Nom du commenditaire */}
-            <td className="px-6 py-4 font-medium text-gray-800">
-                {testimonie.name}
-            </td>
+      {/* Description */}
+      <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate" title={testimonie.description}>
+        {testimonie.description ? testimonie.description.split(" ").slice(0, 10).join(" ") + "..." : "N/A"}
+      </td>
 
-            {/* Profession du commenditaire */}
-            <td className="px-6 py-4 font-medium text-gray-800">
-                {testimonie.profession}
-            </td>
+      {/* Date de création */}
+      <td className="px-6 py-4 text-gray-600">
+        {testimonie.created_at ? new Date(testimonie.created_at).toLocaleDateString('fr-FR') : "N/A"}
+      </td>
 
-            {/* Description du commenditaire */}
-            <td className="px-6 py-4 font-medium text-sm text-gray-500">
-                {(testimonie.description).split(" ").slice(0, 3).join(" ")}...
-            </td>
+      {/* Status */}
+      <td className="px-6 py-4">
+        {testimonie.is_actived == 1 ? (
+          <span className="text-xs bg-green-100 text-green-600 rounded-full px-3 py-1">
+            Activé
+          </span>
+        ) : (
+          <span className="text-xs bg-gray-100 text-gray-800 rounded-full px-3 py-1">
+            Non activé
+          </span>
+        )}
+      </td>
 
+      {/* Actions */}
+      <td className="px-6 py-4">
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={toggleTes} 
+            className="text-blue-500 cursor-pointer hover:scale-110 transition-all flex items-center gap-1"
+          >
+            {testimonie.is_actived == 1 ? (
+              <>
+                <CircleOff size={16}/>
+                <span className="text-xs">Désactiver</span>
+              </>
+            ) : (
+              <>
+                <CheckCircle2 size={16}/>
+                <span className="text-xs">Activer</span>
+              </>
+            )}
+          </button>
 
-            {/* Date de creation */}
-            <td className="px-6 py-4 text-gray-600">
-                {testimonie.created_at || "N/A"}
-            </td>
+          <button
+            onClick={onEdit}
+            className="flex items-center gap-1 cursor-pointer text-yellow-500 hover:scale-110 transition-all"
+          >
+            <Pencil size={16}/>
+            <span className="text-xs">Modifier</span>
+          </button>
 
-            {/* Status */}
-            <td className="px-6 py-4">
-                {testimonie.is_actived ? (
-                    <span className="text-xs bg-green-100 text-green-600 rounded-full px-3 py-2">
-                        Activé
-                    </span>
-                ) : (
-                    <span className="text-xs bg-gray-100 text-gray-800 rounded-full px-3 py-2">
-                        Non activé
-                    </span>
-                )}
-            </td>
-
-            {/* Actions */}
-            <td className="px-6 py-4">
-                <div className="flex items-center justify-between w-full">
-                    <button 
-                        onClick={() => toggleTes(testimonie.id)} 
-                        className="text-blue-500 cursor-pointer hover:scale-110 transition-all"
-                    >
-                        {testimonie.is_actived 
-                            ? <div className="flex items-center gap-1"> <span>Désactivé</span> <CircleOff size={18}/> </div> 
-                            : <div className="flex items-center gap-1"> <span>Activé</span> <CheckCircle2 size={18}/> </div> }
-                    </button>
-
-                    <button
-                        onClick={onEdit}
-                        className="flex items-center gap-1 cursor-pointer text-yellow-500 hover:scale-110 transition-all">
-                        <span>Editer</span>
-                        <Pencil size={18}/>
-                    </button>
-
-                    <button
-                        onClick={() => archived(testimonie.id)} 
-                        className="text-red-500 cursor-pointer hover:scale-110 transition-all"
-                    >
-                        <Trash2 size={18}/>
-                    </button>
-                </div>
-            </td>
-        </tr>
-    );
+          <button
+            onClick={archived} 
+            className="text-red-500 cursor-pointer hover:scale-110 transition-all"
+          >
+            <Trash2 size={16}/>
+          </button>
+        </div>
+      </td>
+    </tr>
+  );
 };
 
 export default TestimonyTableItem;

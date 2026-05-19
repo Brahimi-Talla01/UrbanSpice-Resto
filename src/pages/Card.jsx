@@ -1,24 +1,73 @@
-import { useContext } from 'react';
+// Card.jsx - Version corrigée avec API dynamique
+import { useContext, useState, useEffect } from 'react';
 import { StoreContext } from '../contexts/StoreContext';
 import { useNavigate } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
-import { ArrowDown, ArrowRight } from 'lucide-react';
+import { ToastContainer, toast } from 'react-toastify';
+import { ArrowRight } from 'lucide-react';
+import { getPublishedMenus } from '../../services/menuApi';
 
 const Card = () => {
 
   const navigate = useNavigate();
+  const { cartItems, addToCart, removeToCart, getTotalAmount, getTotalCart, removeAllToCart } = useContext(StoreContext);
+  const [cartMenus, setCartMenus] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const { card_menu, cartItems, addToCart, removeToCart, getTotalAmount, getTotalCart, removeAllToCart } = useContext(StoreContext);
+  // Charger tous les menus et filtrer ceux qui sont dans le panier
+  useEffect(() => {
+    const loadCartMenus = async () => {
+      try {
+        setLoading(true);
+        const response = await getPublishedMenus();
+        
+        if (response.success && response.menus) {
+          // Filtrer les menus qui sont dans cartItems (quantity > 0)
+          const cartItemIds = Object.keys(cartItems).filter(id => cartItems[id] > 0);
+          const filtered = response.menus.filter(menu => 
+            cartItemIds.includes(String(menu.id_menu)) || 
+            cartItemIds.includes(String(menu.id))
+          );
+          setCartMenus(filtered);
+        }
+      } catch (error) {
+        console.error("Erreur chargement panier:", error);
+        toast.error("Erreur lors du chargement du panier");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  console.log(cartItems);
-  
+    loadCartMenus();
+  }, [cartItems]); // Recharger quand le panier change
+
+  // Formatage du prix
+  const formatPrice = (price, currency = 'XAF') => {
+    return `${Number(price).toLocaleString('fr-FR')} ${currency}`;
+  };
+
+  // Extraire le prix numérique
+  const getNumericPrice = (price) => {
+    return typeof price === 'number' ? price : parseFloat(price) || 0;
+  };
+
+  if (loading) {
+    return (
+      <div className='min-h-screen flex items-center justify-center'>
+        <div className='text-center'>
+          <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500 mx-auto mb-4'></div>
+          <p className='text-gray-600'>Chargement de votre panier...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className='min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100'>
 
       <div className='w-full px-4 sm:px-8 md:px-16 lg:px-24 max-w-screen-2xl mx-auto py-6 md:py-12'>
         <div className='text-center mb-8 md:mb-12'>
           <h1 className='text-3xl md:text-4xl font-bold text-gray-800 mb-4 flex items-center justify-center gap-3'>
-            <span className='text-2xl md:text-3xl animate-pulse'>❤️</span>
+            <span className='text-2xl md:text-3xl animate-pulse'>🛒</span>
             Votre panier
           </h1>
           <div className='w-24 h-1 bg-gradient-to-r from-yellow-400 to-yellow-600 mx-auto rounded-full'></div>
@@ -28,7 +77,7 @@ const Card = () => {
 
           {/* Section Cart */}
           <div className='lg:col-span-2 space-y-6'>
-            {!cartItems || Object.keys(cartItems).length === 0 ? (
+            {cartMenus.length === 0 ? (
               <div className='text-center flex items-center justify-center py-16 bg-white rounded-lg shadow-lg border border-gray-100'>
                 <div className='max-w-md mx-auto'>
                   <div className='w-24 h-24 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center'>
@@ -47,76 +96,90 @@ const Card = () => {
                 </div>
               </div>
             ) : (
-              card_menu.map((item, index) => {
-                if (cartItems[item.id] > 0) {
-                  return (
-                    <div key={index} className='bg-white shadow-lg hover:shadow-xl rounded-2xl p-6 border border-gray-100 transform hover:scale-[1.01] transition-all duration-300'>
-                      <div className='flex flex-col md:flex-row items-start md:items-center gap-6'>
+              cartMenus.map((item) => {
+                const menuId = item.id_menu || item.id;
+                const quantity = cartItems[menuId] || 0;
+                const imageUrl = item.image_url || item.image;
+                const numericPrice = getNumericPrice(item.price);
+                const totalPrice = numericPrice * quantity;
+                
+                if (quantity === 0) return null;
+                
+                return (
+                  <div key={menuId} className='bg-white shadow-lg hover:shadow-xl rounded-2xl p-6 border border-gray-100 transform hover:scale-[1.01] transition-all duration-300'>
+                    <div className='flex flex-col md:flex-row items-start md:items-center gap-6'>
+                      
+                      {/* Image */}
+                      <div className='w-full md:w-54 h-40 overflow-hidden rounded-xl shadow-md'>
+                        {imageUrl ? (
+                          <img src={imageUrl} alt={item.title} className='w-full h-full object-cover hover:scale-110 transition-transform duration-500' />
+                        ) : (
+                          <div className='w-full h-full bg-gray-100 flex items-center justify-center'>
+                            <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Content */}
+                      <div className='flex flex-col md:flex-row justify-between w-full gap-6'>
                         
-                        {/* Image */}
-                        <div className='w-full md:w-54 h-40 overflow-hidden rounded-xl shadow-md'>
-                          <img src={item.image} alt="Food" className='w-full h-full object-cover hover:scale-110 transition-transform duration-500' />
+                        {/* Info */}
+                        <div className='flex-1'>
+                          <h3 className='text-xl md:text-2xl font-bold text-gray-800 mb-4'>{item.title}</h3>
+                          
+                          <div className='space-y-2'>
+                            <div className='flex items-center gap-2'>
+                              <span className='text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full'>Prix unitaire</span>
+                              <span className='font-bold text-lg text-gray-800'>{formatPrice(item.price, item.currency)}</span>
+                            </div>
+                            <div className='flex items-center gap-2'>
+                              <span className='text-sm font-medium text-white bg-yellow-500 px-3 py-1 rounded-full'>Total</span>
+                              <span className='font-bold text-xl text-yellow-600'>{totalPrice.toLocaleString('fr-FR')} {item.currency || 'XAF'}</span>
+                            </div>
+                          </div>
                         </div>
 
-                        {/* Content */}
-                        <div className='flex flex-col md:flex-row justify-between w-full gap-6'>
+                        {/* Controls */}
+                        <div className='flex flex-col gap-4 min-w-fit'>
                           
-                          {/* Info */}
-                          <div className='flex-1'>
-                            <h3 className='text-xl md:text-2xl font-bold text-gray-800 mb-4'>{item.title}</h3>
-                            
-                            <div className='space-y-2'>
-                              <div className='flex items-center gap-2'>
-                                <span className='text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full'>Prix unitaire</span>
-                                <span className='font-bold text-lg text-gray-800'>{item.price}</span>
-                              </div>
-                              <div className='flex items-center gap-2'>
-                                <span className='text-sm font-medium text-white bg-yellow-500 px-3 py-1 rounded-full'>Total</span>
-                                <span className='font-bold text-xl text-yellow-600'>{(item.price).split(" ")[0] * cartItems[item.id]} XAF</span>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Controls */}
-                          <div className='flex flex-col gap-4 min-w-fit'>
-                            
-                            {/* Quantity Controls */}
-                            <div className='flex items-center justify-center bg-gray-50 rounded-xl p-2 gap-3'>
-                              <button
-                                onClick={() => removeToCart(item.id)}
-                                disabled={cartItems[item.id] <= 1}
-                                className='w-10 h-10 bg-yellow-500 cursor-pointer text-white text-xl font-bold rounded hover:bg-yellow-600 hover:scale-110 transition-all duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-yellow-300'
-                              >
-                                -
-                              </button>
-                              
-                              <div className='bg-white border-2 border-yellow-200 rounded px-4 py-1 min-w-[3rem] text-center'>
-                                <span className='text-xl font-bold text-gray-800'>{cartItems[item.id]}</span>
-                              </div>
-                              
-                              <button 
-                                onClick={() => addToCart(item.id)} 
-                                className='w-10 h-10 bg-yellow-500 cursor-pointer text-white text-xl font-bold rounded hover:bg-yellow-600 hover:scale-110 transition-all duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-yellow-300'
-                              >
-                                +
-                              </button>
-                            </div>
-
-                            {/* Remove Button */}
+                          {/* Quantity Controls */}
+                          <div className='flex items-center justify-center bg-gray-50 rounded-xl p-2 gap-3'>
                             <button
-                              onClick={() => removeAllToCart(item.id)}
-                              className='px-6 py-2.5 text-sm cursor-pointer bg-yellow-500 text-white font-semibold rounded hover:bg-yellow-600 hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-yellow-300 flex items-center justify-center gap-2'>
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                              </svg>
-                              Retirer
+                              onClick={() => removeToCart(menuId)}
+                              disabled={quantity <= 1}
+                              className='w-10 h-10 bg-yellow-500 cursor-pointer text-white text-xl font-bold rounded hover:bg-yellow-600 hover:scale-110 transition-all duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-yellow-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100'
+                            >
+                              -
+                            </button>
+                            
+                            <div className='bg-white border-2 border-yellow-200 rounded px-4 py-1 min-w-[3rem] text-center'>
+                              <span className='text-xl font-bold text-gray-800'>{quantity}</span>
+                            </div>
+                            
+                            <button 
+                              onClick={() => addToCart(menuId)} 
+                              className='w-10 h-10 bg-yellow-500 cursor-pointer text-white text-xl font-bold rounded hover:bg-yellow-600 hover:scale-110 transition-all duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-yellow-300'
+                            >
+                              +
                             </button>
                           </div>
+
+                          {/* Remove Button */}
+                          <button
+                            onClick={() => removeAllToCart(menuId)}
+                            className='px-6 py-2.5 text-sm cursor-pointer bg-yellow-500 text-white font-semibold rounded hover:bg-yellow-600 hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-yellow-300 flex items-center justify-center gap-2'>
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            Retirer
+                          </button>
                         </div>
                       </div>
                     </div>
-                  )
-                }
+                  </div>
+                );
               })
             )}
           </div>
@@ -166,7 +229,7 @@ const Card = () => {
                   <span className='text-lg font-bold text-gray-900 flex items-center gap-2'>
                     Total à payer
                   </span>
-                  <span className='text-2xl font-bold text-yellow-600'>{getTotalAmount()} XAF</span>
+                  <span className='text-2xl font-bold text-yellow-600'>{getTotalAmount().toLocaleString('fr-FR')} XAF</span>
                 </div>
               </div>
 
