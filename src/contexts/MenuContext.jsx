@@ -3,7 +3,6 @@ import {
     commandes,
     reservations,
     services as initialService,
-    prof_data as initialChefs,
     testimonie_data
 } from "../assets/assets/assets_bd";
 
@@ -24,7 +23,6 @@ export const MenuProvider = ({ children }) => {
     const [orders,      setOrder]      = useState(commandes);
     const [resers,      SetReser]      = useState(reservations);
     const [services,    setService]    = useState(initialService);
-    const [chefs,       setChef]       = useState(initialChefs);
     const [testimonies, setTestimony]  = useState(testimonie_data);
     const [isFormOpen,  setIsFormOpen] = useState(false);
     const [editingMenu, setEditingMenu]= useState(null);
@@ -158,19 +156,6 @@ export const MenuProvider = ({ children }) => {
         setService((prev) => prev.filter((item) => item.id !== id));
     };
 
-    // CHEFS
-    const toggleChef = (id) => {
-        setChef((prev) =>
-            prev.map((item) =>
-                item.id === id ? { ...item, is_actived: !item.is_actived } : item
-            )
-        );
-    };
-
-    const archiveChef = (id) => {
-        setChef((prev) => prev.filter((item) => item.id !== id));
-    };
-
     // TÉMOIGNAGES
     const toggleTestimony = (id) => {
         setTestimony((prev) =>
@@ -207,7 +192,6 @@ export const MenuProvider = ({ children }) => {
                 orders,
                 resers,
                 services,
-                chefs,
                 testimonies,
                 // Autres actions
                 toggleOrder,
@@ -216,8 +200,6 @@ export const MenuProvider = ({ children }) => {
                 archiveReservation,
                 toggleService,
                 archiveService,
-                toggleChef,
-                archiveChef,
                 toggleTestimony,
                 archiveTestimony,
             }}

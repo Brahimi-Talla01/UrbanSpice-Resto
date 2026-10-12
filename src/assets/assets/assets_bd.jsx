@@ -7,10 +7,6 @@ import dejeunerImg from './Img-dejeuner.jpeg';
 import diner1 from './Img-diner.jpeg';
 import service1 from './Img-livraison.jpeg';
 
-// Chefs
-import chef1 from './chef1.jpeg';
-import chef2 from './chef2.jpeg';
-import chef3 from './chef3.jpeg';
 //Testimony
 import test1 from './images.jpeg';
 import zdeveloper from './Zdevelopper.jpeg';
@@ -314,36 +310,6 @@ const services =[
     },
 ];
 
-const prof_data = [
-    {
-        "id": "1",
-        "image_url": chef3,
-        "name": "Dieuveil Malonga",
-        "post": "Chef Cuisinier Renommé",
-        "is_actived": true,
-        "created_at": "2025/08/20",
-        "description": "Célèbre chef Camerounais, restaurateur et personnalité de la télévision, connu pour ses émissions culinaires et ses restaurants étoilés Michelin à travers le monde."
-    },
-    {
-        "id": "2",
-        "image_url": chef1,
-        "name": "Georgiana Viou",
-        "post": "Sommelière Experte",
-        "is_actived": true,
-        "created_at": "2025/08/20",
-        "description": "Sommelière passionnée et reconnue pour sa connaissance approfondie des vins, capable de sublimer chaque plat par des accords mets-vins parfaits."
-    },
-    {
-        "id": "3",
-        "image_url": chef2,
-        "name": "Mory Sacko",
-        "post": "Maître Boulanger-Pâtissier",
-        "is_actived": true,
-        "created_at": "2025/08/20",
-        "description": "Artisan boulanger-pâtissier dévoué, perpétuant les traditions de la boulangerie française avec des créations gourmandes et des pains artisanaux exceptionnels."
-    }
-];
-
 const testimonie_data = [
     {
         "id": "1",
@@ -386,6 +352,5 @@ export {
   commandes,
   temoignages,
   services,
-  prof_data,
   testimonie_data,
 };
