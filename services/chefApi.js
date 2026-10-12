@@ -1,5 +1,3 @@
-// frontend/src/services/chefApi.js
-
 const API_BASE_URL = 'http://localhost/UrbanSpice-Resto/backend';
 
 const defaultOptions = {

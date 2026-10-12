@@ -75,29 +75,6 @@ const apiCall = async (module, action, options = {}) => {
         }
     };
 
-  export const archiveService = async (id_service) => {
-    if (!window.confirm("Supprimer ce service ?")) return;
-    
-    try {
-      const response = await fetch(
-        `http://localhost/UrbanSpice-Resto/backend/index.php?module=service&action=delete`,
-        {
-          method: 'DELETE',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id_service })
-        }
-      );
-      const data = await response.json();
-      if (data.success) {
-        loadServices();
-      }
-    } catch (error) {
-      console.error("Erreur suppression:", error);
-      toast.error("Erreur lors de la suppression");
-    }
-  };
-
 /**
  * Créer un service (admin uniquement)
  * @param {FormData} formData - Données du service avec image
@@ -125,18 +102,70 @@ export const updateService = async (formData) => {
  * Récupérer les services actifs (public)
  */
 export const getActiveService = async () => {
-    return apiCall('service', 'getActive', {
-        method: 'GET'
-    });
+    try {
+        const response = await fetch(
+            `${API_BASE_URL}/index.php?module=service&action=getActive`,
+            {
+                ...defaultOptions,
+                method: 'GET'
+            }
+        );
+        
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            const text = await response.text();
+            console.error('Réponse non-JSON getActiveService:', text);
+            throw new Error('Le serveur a retourné du HTML au lieu de JSON');
+        }
+
+        const data = await response.json();
+        if (!response.ok) {
+            throw {
+                status: response.status,
+                message: data.message || 'Une erreur est survenue',
+                data: data
+            };
+        }
+        return data;
+    } catch (error) {
+        console.error('Erreur getActiveService:', error);
+        throw error;
+    }
 };
 
 /**
  * Récupérer tous les services (admin uniquement)
  */
 export const getAllServices = async () => {
-    return apiCall('service', 'getAll', {
-        method: 'GET'
-    });
+    try {
+        const response = await fetch(
+            `${API_BASE_URL}/index.php?module=service&action=getAll`,
+            {
+                ...defaultOptions,
+                method: 'GET'
+            }
+        );
+        
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            const text = await response.text();
+            console.error('Réponse non-JSON getAllServices:', text);
+            throw new Error('Le serveur a retourné du HTML au lieu de JSON');
+        }
+
+        const data = await response.json();
+        if (!response.ok) {
+            throw {
+                status: response.status,
+                message: data.message || 'Une erreur est survenue',
+                data: data
+            };
+        }
+        return data;
+    } catch (error) {
+        console.error('Erreur getAllServices:', error);
+        throw error;
+    }
 };
 
 /**
@@ -144,12 +173,29 @@ export const getAllServices = async () => {
  * @param {number} id_service - ID du service
  */
 export const getServiceById = async (id_service) => {
-    return apiCall('service', 'getById', {
+    const url = `${API_BASE_URL}/index.php?module=service&action=getById&id_service=${encodeURIComponent(id_service)}`;
+    const response = await fetch(url, {
+        ...defaultOptions,
         method: 'GET'
     });
+
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error('Réponse non-JSON getServiceById:', text);
+        throw new Error('Le serveur a retourné du HTML au lieu de JSON');
+    }
+
+    const data = await response.json();
+    if (!response.ok) {
+        throw {
+            status: response.status,
+            message: data.message || 'Une erreur est survenue',
+            data: data
+        };
+    }
+    return data;
 };
-
-
 
 /**
  * Activer/Désactiver un service (admin uniquement)
@@ -159,7 +205,7 @@ export const getServiceById = async (id_service) => {
 export const toggleActiveService = async (id_service, is_activated) => {
     return apiCall('service', 'toggleActive', {
         method: 'POST',
-        body: JSON.stringify({ id_service, is_activated })
+        body: JSON.stringify({ id_service, is_actived: is_activated ? 1 : 0 })
     });
 };
 

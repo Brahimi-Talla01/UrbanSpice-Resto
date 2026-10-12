@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { getAllServices } from '../../services/serviceApi';
+import { getAllServices, getActiveService } from '../../services/serviceApi';
 import { toast } from 'react-toastify';
 
 const Services = () => {
@@ -7,6 +7,7 @@ const Services = () => {
     const [activeSlide, setActiveSlide] = useState(0);
     const [loading, setLoading] = useState(true);
     const [services, setServices] = useState([]);
+    const [error, setError] = useState(null);
     const scrollContainerRe = useRef(null);
 
     // Calculer l'index du slide actif
@@ -24,13 +25,30 @@ const Services = () => {
     const loadServices = async () => {
         try {
             setLoading(true);
-            const response = await getAllServices();
+            setError(null);
+            
+            // Essayer d'abord getAll (admin), puis getActive (public) si échoue
+            let response;
+            try {
+                response = await getAllServices();
+            } catch {
+                // Si erreur (ex: 403 non admin), utiliser getActive pour le public
+                response = await getActiveService();
+            }
+
             if (response.success && response.services) {
                 setServices(response.services);
+            } else if (response.success && response.data) {
+                // Certains endpoints retournent dans data au lieu de services
+                setServices(response.data);
+            } else {
+                throw new Error(response.message || 'Structure de réponse invalide');
             }
         } catch (error) {
             console.error("Erreur chargement services:", error);
-            toast.error("Erreur lors du chargement des services");
+            setError(error.message || "Impossible de charger les services");
+            toast.error(error.message || "Erreur lors du chargement des services");
+            // Garder les données existantes si disponible
         } finally {
             setLoading(false);
         }
@@ -63,6 +81,13 @@ const Services = () => {
     return (
         <div id='services' className='w-full px-4 sm:px-8 md:px-16 lg:px-24 2xl:px-36 mx-auto overflow-hidden'>
             <h1 className='text-2xl text-center py-4 md:pt-8 md:text-4xl font-semibold font-outfit'> Nos services</h1>
+
+            {/* Message d'erreur */}
+            {error && (
+                <div className="text-center py-8 text-red-500 bg-red-50 rounded-lg mb-4">
+                    <p className="text-lg font-semibold">⚠️ {error}</p>
+                </div>
+            )}
 
             {/* Desktop */}
             <div className='hidden md:grid px-8 md:px-0 gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 py-4 md:py-8'>

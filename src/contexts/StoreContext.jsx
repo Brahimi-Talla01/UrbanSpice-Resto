@@ -35,47 +35,48 @@ const StoreContextProvider = (props) => {
         }
     }, [user]);
 
-    // Vérifier la session au chargement
+    // Nettoyer le loading quand on se déconnecte
     useEffect(() => {
-        checkUserSession();
-    }, []);
-
-    /**
-     * Vérifier si l'utilisateur a une session active
-     */
-    const checkUserSession = async () => {
-        try {
-            const response = await fetch(
-                'http://localhost/UrbanSpice-Resto/backend/index.php?module=auth&action=check',
-                {
-                    method: 'GET',
-                    credentials: 'include',
-                    headers: { 'Content-Type': 'application/json' }
-                }
-            );
-
-            const data = await response.json();
-            console.log('Check session response:', data);
-
-            if (data.authenticated === true && data.user) {
-                setUser({
-                    id_user: data.user.id,
-                    email: data.user.email_user,
-                    nom_user: data.user.nom_user,
-                    role: data.user.role
-                });
-                console.log('Utilisateur connecté:', data.user.nom_user);
-            } else {
-                setUser(null);
-                console.log('Aucun utilisateur connecté');
-            }
-        } catch (error) {
-            console.error('Erreur vérification session:', error);
-            setUser(null);
-        } finally {
+        if (!user) {
             setLoading(false);
         }
-    };
+    }, [user]);
+
+    // Vérifier la session au chargement
+    useEffect(() => {
+        const verifySession = async () => {
+            try {
+                const response = await fetch(
+                    'http://localhost/UrbanSpice-Resto/backend/index.php?module=auth&action=check',
+                    {
+                        method: 'GET',
+                        credentials: 'include',
+                        headers: { 'Content-Type': 'application/json' }
+                    }
+                );
+
+                const data = await response.json();
+
+                if (data.authenticated === true && data.user) {
+                    setUser({
+                        id_user: data.user.id,
+                        email: data.user.email_user,
+                        nom_user: data.user.nom_user,
+                        role: data.user.role
+                    });
+                } else {
+                    setUser(null);
+                }
+            } catch (error) {
+                console.error('Erreur vérification session:', error);
+                setUser(null);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        verifySession();
+    }, []);
 
     /**
      * Rafraîchir les données utilisateur
@@ -122,9 +123,6 @@ const StoreContextProvider = (props) => {
             if (data.success && data.user) {
                 setUser(data.user);
                 localStorage.setItem('user', JSON.stringify(data.user));
-                
-                const checkResult = await authAPI.check();
-                console.log('Session vérifiée après login:', checkResult);
                 
                 toast.success(`Bienvenue ${data.user.nom_user || data.user.email}`);
             }

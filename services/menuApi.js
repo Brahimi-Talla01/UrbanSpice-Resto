@@ -118,7 +118,7 @@ export const getPublishedMenus = async () => {
         const url = `${API_BASE_URL}/index.php?module=menu&action=getPublished`;
         const response = await fetch(url, {
             ...defaultOptions,
-            method: 'GET'
+            method: 'GET',
         });
         return await handleResponse(response);
     } catch (error) {

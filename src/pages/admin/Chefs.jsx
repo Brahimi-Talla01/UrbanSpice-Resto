@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAdminForm } from "../../contexts/AdminFormContext";
 import ChefTableItem from "../../components/admin/ChefTableItem";
-// import { getAllChefs, deleteChef, toggleActiveChef } from "../../../services/chefApi";
+import { getAllChefs, deleteChef, toggleActiveChef } from "../../../services/chefApi";
 import { toast } from "react-toastify";
 
 const Chefs = () => {

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import FoodList from './FoodList';
 import { getPublishedMenus } from '../../services/menuApi';
+import { toast } from 'react-toastify';
 import { ToastContainer } from 'react-toastify';
 
 const FoodDisplay = () => {
@@ -11,6 +12,8 @@ const FoodDisplay = () => {
     const [maxPrice, setMaxPrice] = useState("");
     const [menus, setMenus] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
 
     const handleChange = (e) => {
         setMenuFilter(e.target.value);
@@ -23,12 +26,21 @@ const FoodDisplay = () => {
     const loadMenus = async () => {
         try {
             setLoading(true);
+            setError(null);
+            setMenus([]);
+            
             const response = await getPublishedMenus();
-            if (response.success && response.menus) {
+
+            // Vérifier la structure de la réponse avant de l'afficher
+            if (response?.success && Array.isArray(response.menus)) {
                 setMenus(response.menus);
+            } else {
+                throw new Error(response?.message || 'Structure de réponse invalide');
             }
         } catch (error) {
             console.error("Erreur chargement menus:", error);
+            setError(error.message || "Impossible de charger les menus");
+            toast.error(error.message || "Erreur lors du chargement des menus");
         } finally {
             setLoading(false);
         }
@@ -213,6 +225,19 @@ const FoodDisplay = () => {
 
                 {/* Menu section */}
                 <div className='col-start-1 col-span-4 md:col-start-2 md:col-span-3 w-full bg-background-top-light rounded-lg p-4'>
+
+                    {error && (
+                        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                            <p className="font-semibold mb-2">⚠️ Impossible de charger les menus</p>
+                            <p className="mb-3">{error}</p>
+                            <button
+                                onClick={loadMenus}
+                                className="px-4 py-2 bg-yellow-500 text-white rounded cursor-pointer hover:bg-yellow-600 transition-colors"
+                            >
+                                Réessayer
+                            </button>
+                        </div>
+                    )}
 
                     {filteredMenus.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-20 text-gray-400">

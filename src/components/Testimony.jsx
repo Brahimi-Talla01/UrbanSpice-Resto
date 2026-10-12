@@ -1,15 +1,16 @@
 // frontend/src/components/Testimony.jsx (page publique)
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { assets } from '../assets/assets/assets';
 import TestimonyCart from './TestimonyCart';
 import { getActiveTestimonies } from '../../services/testimonyApi';
+import { toast } from 'react-toastify';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const Testimony = () => {
     const [testimonies, setTestimonies] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(0);
-    const scrollContainerRef = useRef(null);
     
     // Nombre de cartes visibles selon l'écran
     const getCardsPerView = () => {
@@ -25,12 +26,17 @@ const Testimony = () => {
     const loadTestimonies = async () => {
         try {
             setLoading(true);
+            setError(null);
             const response = await getActiveTestimonies();
             if (response.success && response.testimonies) {
                 setTestimonies(response.testimonies);
+            } else {
+                throw new Error(response.message || 'Structure de réponse invalide');
             }
         } catch (error) {
             console.error("Erreur chargement témoignages:", error);
+            setError(error.message || "Impossible de charger les témoignages");
+            toast.error(error.message || "Erreur lors du chargement des témoignages");
         } finally {
             setLoading(false);
         }
@@ -100,7 +106,15 @@ const Testimony = () => {
     }
 
     if (testimonies.length === 0) {
-        return null;
+        return (
+            <div className='w-full min-h-[400px] relative my-8 overflow-hidden'>
+                <div className='absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/60' />
+                <div className='relative z-10 flex flex-col items-center justify-center py-16'>
+                    <p className='text-xl text-white text-center'>Aucun témoignage disponible pour le moment.</p>
+                    {error && <p className='text-white/70 text-sm mt-2'>{error}</p>}
+                </div>
+            </div>
+        );
     }
 
     const currentTestimonies = getCurrentTestimonies();
