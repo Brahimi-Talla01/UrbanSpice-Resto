@@ -6,7 +6,7 @@ import { createOrder } from '../../services/orderApi';
 import { toast } from 'react-toastify';
 
 const OrderForm = () => {
-    const { getTotalAmount, getTotalCart, cartItems, card_menu } = useContext(StoreContext);
+    const { getTotalAmount, getTotalCart, cartItems, storeMenus } = useContext(StoreContext);
     const navigate = useNavigate();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showSuccessPopup, setShowSuccessPopup] = useState(false);
@@ -32,12 +32,14 @@ const OrderForm = () => {
         });
     };
 
-    // Fonction pour récupérer les articles du panier
+    // Fonction pour récupérer les articles du panier (menus de la BDD)
     const getOrderItems = () => {
         const items = [];
         for (const itemId in cartItems) {
             if (cartItems[itemId] > 0) {
-                const menuItem = card_menu.find(item => String(item.id) === String(itemId));
+                const menuItem = storeMenus.find(
+                    (item) => String(item.id_menu ?? item.id) === String(itemId)
+                );
                 if (menuItem) {
                     const price = typeof menuItem.price === 'number' 
                         ? menuItem.price 

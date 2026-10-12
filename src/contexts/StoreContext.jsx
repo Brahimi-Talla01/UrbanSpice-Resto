@@ -1,11 +1,26 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { card_menu } from "../assets/assets/assets";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { User } from "lucide-react";
 import { authAPI } from "../../services/api";
+import { getPublishedMenus } from "../../services/menuApi";
 
 export const StoreContext = createContext();
+
+// ── Persistance du panier et des favoris (localStorage) ──────────
+// Survivent au rechargement de la page ; les valeurs sont
+// { [id_menu]: quantité }. En cas de JSON corrompu on repart de {}.
+const CART_STORAGE_KEY = 'urbanspice_cart';
+const FAVORITES_STORAGE_KEY = 'urbanspice_favorites';
+
+const loadStoredItems = (key) => {
+    try {
+        const stored = localStorage.getItem(key);
+        return stored ? JSON.parse(stored) : {};
+    } catch (error) {
+        console.error(`Erreur lecture localStorage [${key}]:`, error);
+        return {};
+    }
+};
 
 /**
  * Hook personnalisé pour accéder au contexte d'authentification
@@ -19,12 +34,54 @@ export const useAuth = () => {
 };
 
 const StoreContextProvider = (props) => {
-    const [cartItems, setCartItems] = useState({});
-    const [heartItems, setHeartItems] = useState({});
+    // Panier / favoris hydratés depuis le localStorage au démarrage
+    const [cartItems, setCartItems] = useState(() => loadStoredItems(CART_STORAGE_KEY));
+    const [heartItems, setHeartItems] = useState(() => loadStoredItems(FAVORITES_STORAGE_KEY));
+    // Menus publiés de la BDD — source de vérité du panier et des favoris
+    // (remplace l'ancien tableau statique card_menu importé de assets.js)
+    const [storeMenus, setStoreMenus] = useState([]);
     const [isAddedToCart, setIsAddedToCart] = useState(false);
     const [isShowLogin, setIsShowLogin] = useState(false);
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+
+    // Persister le panier et les favoris à chaque changement
+    useEffect(() => {
+        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems));
+    }, [cartItems]);
+
+    useEffect(() => {
+        localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(heartItems));
+    }, [heartItems]);
+
+    // Charger une seule fois les menus publiés : prix, titres et images
+    // utilisés par le panier / les favoris viennent de la BDD.
+    useEffect(() => {
+        const fetchStoreMenus = async () => {
+            try {
+                const response = await getPublishedMenus();
+                if (response?.success && Array.isArray(response.menus)) {
+                    setStoreMenus(response.menus);
+                }
+            } catch (error) {
+                // Le panier reste utilisable ; les totaux seront recalculés
+                // au prochain chargement réussi.
+                console.error('Erreur chargement menus (panier):', error);
+            }
+        };
+
+        fetchStoreMenus();
+    }, []);
+
+    // Retrouver un menu de la BDD quel que soit son identifiant
+    // (id_menu pour la BDD, id pour l'ancien format statique)
+    const findMenuItem = (itemId) =>
+        storeMenus.find((menu) => String(menu.id_menu ?? menu.id) === String(itemId));
+
+    // Prix numérique défensif : la BDD renvoie un nombre, l'ancien
+    // format statique était une chaîne du type « 3000 XAF »
+    const getNumericPrice = (price) =>
+        typeof price === 'number' ? price : parseFloat(String(price).split(' ')[0]) || 0;
 
     // Sauvegarder l'utilisateur dans localStorage
     useEffect(() => {
@@ -150,7 +207,7 @@ const StoreContextProvider = (props) => {
     };
 
     const addToCart = (itemId) => {
-        const item = card_menu.find(cart => cart.id === itemId);
+        const item = findMenuItem(itemId);
         
         if (!cartItems[itemId]) {
             setCartItems((prev) => ({...prev, [itemId]: 1}));
@@ -167,7 +224,7 @@ const StoreContextProvider = (props) => {
     };
 
     const addToHeart = (itemId) => {
-        const item = card_menu.find(cart => cart.id === itemId);
+        const item = findMenuItem(itemId);
         
         if (!heartItems[itemId]) {
             setHeartItems((prev) => ({...prev, [itemId]: 1}));
@@ -178,6 +235,8 @@ const StoreContextProvider = (props) => {
     };
 
     const removeToCart = (itemId) => {
+        const item = findMenuItem(itemId);
+        
         if (cartItems[itemId] && cartItems[itemId] >= 2) {
             setCartItems((prev) => ({...prev, [itemId]: prev[itemId] - 1}));
         } else if (cartItems[itemId] === 1) {
@@ -187,10 +246,14 @@ const StoreContextProvider = (props) => {
                 return updatedCart;
             });
         }
+        
+        if (item) {
+            toast.info(`${item.title} a bien été retiré du panier`);
+        }
     };
 
     const removeToHeart = (itemId) => {
-        const item = card_menu.find(cart => cart.id === itemId);
+        const item = findMenuItem(itemId);
         
         setHeartItems((prev) => {
             const updatedHeart = { ...prev };
@@ -204,7 +267,7 @@ const StoreContextProvider = (props) => {
     };
 
     const removeAllToCart = (itemId) => {
-        const item = card_menu.find(cart => cart.id === itemId);
+        const item = findMenuItem(itemId);
         
         setCartItems((prev) => {
             const updatedCart = { ...prev };
@@ -220,10 +283,9 @@ const StoreContextProvider = (props) => {
     const getTotalAmount = () => {
         let totalAmount = 0;
         for (const itemId in cartItems) {
-            let itemCart = card_menu.find((cart) => cart.id === itemId);
+            const itemCart = findMenuItem(itemId);
             if (itemCart) {
-                const price = parseFloat(itemCart.price.split(' ')[0]);
-                totalAmount += price * cartItems[itemId];
+                totalAmount += getNumericPrice(itemCart.price) * cartItems[itemId];
             }
         }
         return totalAmount;
@@ -291,7 +353,8 @@ const StoreContextProvider = (props) => {
         removeToHeart,
         getTotalHeart,
         setIsShowLogin,
-        card_menu,
+        // Menus publiés de la BDD : source de vérité du panier / favoris
+        storeMenus,
         cartItems,
         heartItems,
         isAddedToCart,
