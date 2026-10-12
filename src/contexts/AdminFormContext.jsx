@@ -10,6 +10,12 @@ export const AdminFormProvider = ({ children }) => {
     const [formType, setFormType] = useState(null); // 'menu', 'service', 'order', 'reservation'
     const [editingItem, setEditingItem] = useState(null);
     const [loading, setLoading] = useState(false);
+    // Compteur incrémenté après chaque création/modification réussie.
+    // Les pages admin s'y abonnent (useEffect sur refreshKey) pour recharger leur liste
+    // et afficher la nouvelle donnée sans actualisation manuelle.
+    const [refreshKey, setRefreshKey] = useState(0);
+
+    const triggerRefresh = () => setRefreshKey((k) => k + 1);
 
     const openForm = (type, item = null) => {
         setFormType(type);
@@ -34,6 +40,8 @@ export const AdminFormProvider = ({ children }) => {
             setLoading,
             openForm,
             closeForm,
+            refreshKey,
+            triggerRefresh,
         }}>
             {children}
         </AdminFormContext.Provider>

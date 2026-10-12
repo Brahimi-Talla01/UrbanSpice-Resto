@@ -8,7 +8,7 @@ import { createChef, updateChef } from "../../../services/chefApi";
 import { X } from "lucide-react";
 
 const AdminForm = () => {
-    const { isFormOpen, formType, editingItem, closeForm, setLoading } = useAdminForm();
+    const { isFormOpen, formType, editingItem, closeForm, setLoading, triggerRefresh } = useAdminForm();
     const { fetchMenus } = useMenu();
     
     const [localLoading, setLocalLoading] = useState(false);
@@ -176,6 +176,8 @@ const AdminForm = () => {
             }
 
             if (response?.success) {
+                // Notifie les pages admin (tableau des chefs, etc.) pour rechargement immédiat
+                triggerRefresh();
                 setSuccess(editingItem ? "Mis à jour avec succès !" : "Créé avec succès !");
                 setTimeout(() => {
                     resetForm();

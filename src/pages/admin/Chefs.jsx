@@ -1,18 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAdminForm } from "../../contexts/AdminFormContext";
 import ChefTableItem from "../../components/admin/ChefTableItem";
 import { getAllChefs, deleteChef, toggleActiveChef } from "../../../services/chefApi";
 import { toast } from "react-toastify";
 
 const Chefs = () => {
-  const { openForm } = useAdminForm();
+  const { openForm, refreshKey } = useAdminForm();
   
   const [filter, setFilter] = useState("all");
   const [chefs, setChefs] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Charger les chefs depuis l'API
-  const loadChefs = async () => {
+  // Charger les chefs depuis l'API (mémoïsé : rechargé à chaque refreshKey)
+  const loadChefs = useCallback(async () => {
     try {
       setLoading(true);
       const response = await getAllChefs();
@@ -25,11 +25,13 @@ const Chefs = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
+  // Recharger la liste au montage puis après chaque création/modification
+  // réussie via le formulaire admin (triggerRefresh du AdminFormContext)
   useEffect(() => {
     loadChefs();
-  }, []);
+  }, [loadChefs, refreshKey]);
 
   // Rafraîchir après chaque action
   const refreshChefs = async () => {
