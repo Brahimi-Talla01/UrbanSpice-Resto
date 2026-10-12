@@ -1,19 +1,8 @@
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 
-const data = [
-  { mois: 'Jan', revenus: 65 },
-  { mois: 'Fév', revenus: 45 },
-  { mois: 'Mar', revenus: 78 },
-  { mois: 'Avr', revenus: 52 },
-  { mois: 'Mai', revenus: 89 },
-  { mois: 'Jun', revenus: 67 },
-  { mois: 'Jul', revenus: 95 },
-  { mois: 'Aoû', revenus: 73 },
-];
-
-const revenusTotal = data.reduce((acc, item) => acc + item.revenus, 0);
-
-const DashboardChart = () => {
+// data : [{ mois: 'Jan', revenus: 6500 }, …] — reçu du dashboard (données BDD)
+const DashboardChart = ({ data = [] }) => {
+  const revenusTotal = data.reduce((acc, item) => acc + (item.revenus || 0), 0);
   return (
     <div className='h-64 bg-gradient-to-t from-orange-50 to-white rounded-lg p-4 relative overflow-hidden'>
       {/* Chart container */}
@@ -36,7 +25,7 @@ const DashboardChart = () => {
       </ResponsiveContainer>
 
       {/* Labels overlay */}
-      <div className='absolute top-2 left-0 text-2xl font-bold text-gray-900'>${revenusTotal}</div>
+      <div className='absolute top-2 left-0 text-2xl font-bold text-gray-900'>{revenusTotal.toLocaleString('fr-FR')} XAF</div>
       <div className='absolute top-8 left-0 text-sm text-gray-500'>Revenus Totaux</div>
     </div>
   );

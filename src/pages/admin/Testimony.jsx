@@ -1,19 +1,19 @@
 // frontend/src/pages/admin/Testimony.jsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAdminForm } from "../../contexts/AdminFormContext";
 import TestimonyTableItem from "../../components/admin/TestimonyTableItem";
 import { getAllTestimonies, deleteTestimony, toggleActiveTestimony } from "../../../services/testimonyApi";
 import { toast } from "react-toastify";
 
 const Testimony = () => {
-  const { openForm, isFormOpen } = useAdminForm();
+  const { openForm, refreshKey } = useAdminForm();
   
   const [filter, setFilter] = useState("all");
   const [testimonies, setTestimonies] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Charger les témoignages depuis l'API
-  const loadTestimonies = async () => {
+  // Charger les témoignages depuis l'API (mémoïsé : rechargé à chaque refreshKey)
+  const loadTestimonies = useCallback(async () => {
     try {
       setLoading(true);
       const response = await getAllTestimonies();
@@ -26,23 +26,12 @@ const Testimony = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    loadTestimonies();
   }, []);
 
+  // Recharger au montage puis après chaque création/modification réussie (AdminForm)
   useEffect(() => {
-    if (!isFormOpen) {
-      // Formulaire vient d'être fermé, on recharge
-      loadTestimonies();
-    }
-  }, [isFormOpen]);
-
-  // Rafraîchir après chaque action
-  const refreshTestimonies = async () => {
-    await loadTestimonies();
-  };
+    loadTestimonies();
+  }, [loadTestimonies, refreshKey]);
 
   const handleAddTestimony = () => {
     openForm('temoignage');

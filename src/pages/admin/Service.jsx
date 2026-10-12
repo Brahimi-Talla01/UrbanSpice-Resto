@@ -1,19 +1,19 @@
 // frontend/src/pages/admin/Service.jsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAdminForm } from "../../contexts/AdminFormContext";
 import ServiceTableItem from "../../components/admin/ServiceTableItem";
 import { getAllServices, deleteService, toggleService } from "../../../services/serviceApi";
 import { toast } from "react-toastify";
 
 const Service = () => {
-  const { openForm, closeForm, isFormOpen } = useAdminForm(); 
+  const { openForm, refreshKey } = useAdminForm();
   
   const [filter, setFilter] = useState("all");
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Charger les services depuis l'API
-  const loadServices = async () => {
+  // Charger les services depuis l'API (mémoïsé : rechargé à chaque refreshKey)
+  const loadServices = useCallback(async () => {
     try {
       setLoading(true);
       const response = await getAllServices();
@@ -26,15 +26,12 @@ const Service = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    loadServices();
   }, []);
 
-  const refreshServices = () => {
+  // Recharger au montage puis après chaque création/modification réussie (AdminForm)
+  useEffect(() => {
     loadServices();
-  };
+  }, [loadServices, refreshKey]);
 
   const handleAddService = () => {
     openForm('service');
@@ -43,13 +40,6 @@ const Service = () => {
   const handleEditService = (service) => {
     openForm('service', service);
   };
-
-  useEffect(() => {
-    if (!isFormOpen) {
-      // Formulaire vient d'être fermé, on recharge
-      refreshServices();
-    }
-  }, [isFormOpen]);
 
   const handleToggleActive = async (id_service, currentStatus) => {
     try {
