@@ -1,16 +1,17 @@
 import { useContext, useEffect, useState } from 'react';
 import { assets } from '../assets/assets/assets';
 import { ShoppingCart, Heart, Search, Menu, Info, Briefcase, Utensils, Phone, X, ArrowLeft, Home, User } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { StoreContext } from '../contexts/StoreContext';
 import UserProfile from './UserProfile';
-import { getUserProfil } from '../../services/api';
 
 const Navbar = () => {
-    const { getTotalCart, getTotalHeart, setIsShowLogin, user, setUser, loading } = useContext(StoreContext);
+    const { getTotalCart, getTotalHeart, setIsShowLogin, user, setUser, loading, storeMenus } = useContext(StoreContext);
+    const navigate = useNavigate();
 
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [inputSearchOpen, setInputSearchOpen] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
     const [scrolled, setScrolled] = useState(false);
     // const [isConnected, setIsConnected] = useState(false);
     // const [loading, setLoading] = useState(true);
@@ -48,9 +49,7 @@ const Navbar = () => {
                     top: offsetTop,
                     behavior: 'smooth'
                 });
-        }
-        setIsOpenMenu(false); 
-    };
+        }    };
 
     useEffect(() => {
         const handleScroll = () => {
@@ -78,6 +77,57 @@ const Navbar = () => {
     const handleUpdateUser = (updateUser) => {
         setUser(updateUser);
     }
+
+    // ── Recherche de menus (filtre client sur storeMenus) ─────────
+
+    // Normalisation : minuscules + sans accents (« Ndolè » ↔ « ndole »)
+    const normalizeText = (text) =>
+        String(text ?? '')
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '');
+
+    // Suggestions en direct (max 6) sur titre + catégorie
+    const searchSuggestions = (() => {
+        const term = normalizeText(searchTerm.trim());
+        if (!term) return [];
+        return storeMenus
+            .filter((menu) =>
+                normalizeText(menu.title).includes(term) ||
+                normalizeText(menu.category).includes(term)
+            )
+            .slice(0, 6);
+    })();
+
+    const closeSearch = () => {
+        setInputSearchOpen(false);
+        setSearchTerm('');
+    };
+
+    // Entrée ou clic sur la loupe → page de résultats dédiée
+    const goToSearchResults = (e) => {
+        e.preventDefault();
+        const term = searchTerm.trim();
+        if (!term) return;
+        closeSearch();
+        navigate(`/recherche?q=${encodeURIComponent(term)}`);
+    };
+
+    // Clic sur une suggestion → fiche détail du menu
+    const goToMenu = (menuId) => {
+        closeSearch();
+        navigate(`/card-description/${menuId}`);
+    };
+
+    // Touche Échap : ferme l'overlay de recherche
+    useEffect(() => {
+        if (!inputSearchOpen) return;
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') closeSearch();
+        };
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [inputSearchOpen]);
 
     const navItems = [
         { name: 'Accueil', href: '#home' },
@@ -187,7 +237,7 @@ const Navbar = () => {
                                 >
                                     Se connecter
                                 </button> ) : (
-                                <UserProfile user={user} />
+                                <UserProfile user={user} onUpdateUser={handleUpdateUser} />
                             )
                         }
 
@@ -206,9 +256,10 @@ const Navbar = () => {
                     <div className="fixed inset-0 bg-black/20 z-50 flex items-start justify-center pt-4">
                         <div className="w-full max-w-2xl mx-4">
                             <div className="bg-white rounded-2xl shadow-2xl p-6 transform animate-in fade-in slide-in-from-top-4 duration-300">
-                                <div className="flex items-center gap-4">
+                                <form onSubmit={goToSearchResults} className="flex items-center gap-4">
                                     <button
-                                        onClick={() => setInputSearchOpen(false)}
+                                        type="button"
+                                        onClick={closeSearch}
                                         className=" cursor-pointer p-2 hover:bg-gray-100 rounded-full transition-colors"
                                     >
                                         <ArrowLeft className="w-5 h-5 text-gray-600" />
@@ -218,14 +269,60 @@ const Navbar = () => {
                                         <input
                                             type="search"
                                             placeholder="Rechercher un menu..."
+                                            value={searchTerm}
+                                            onChange={(e) => setSearchTerm(e.target.value)}
                                             className="w-full px-4 py-3 bg-gray-50 border-0 rounded-lg text-gray-700 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-all"
                                             autoFocus
                                         />
-                                        <button className="absolute right-3 top-1/2 transform -translate-y-1/2 p-2 bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white rounded-lg transition-all cursor-pointer">
+                                        <button
+                                            type="submit"
+                                            className="absolute right-3 top-1/2 transform -translate-y-1/2 p-2 bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white rounded-lg transition-all cursor-pointer"
+                                        >
                                             <Search className="w-4 h-4" />
                                         </button>
                                     </div>
-                                </div>
+                                </form>
+
+                                {/* Suggestions en direct */}
+                                {searchTerm.trim() !== '' && (
+                                    <div className="mt-4">
+                                        {searchSuggestions.length === 0 ? (
+                                            <div className="text-center text-gray-400 py-6 text-sm">
+                                                Aucun plat ne correspond à « {searchTerm.trim()} »
+                                            </div>
+                                        ) : (
+                                            <ul className="divide-y divide-gray-100 max-h-80 overflow-y-auto">
+                                                {searchSuggestions.map((menu) => {
+                                                    const menuId = menu.id_menu ?? menu.id;
+                                                    return (
+                                                        <li key={menuId}>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => goToMenu(menuId)}
+                                                                className="w-full flex items-center gap-3 p-3 text-left hover:bg-orange-50 rounded-lg transition-colors cursor-pointer"
+                                                            >
+                                                                <div className="w-12 h-12 bg-gray-100 rounded-lg overflow-hidden shrink-0 flex items-center justify-center">
+                                                                    {menu.image_url ? (
+                                                                        <img src={menu.image_url} alt={menu.title} className="w-full h-full object-cover" />
+                                                                    ) : (
+                                                                        <Utensils className="w-5 h-5 text-gray-400" />
+                                                                    )}
+                                                                </div>
+                                                                <div className="flex-1 min-w-0">
+                                                                    <p className="text-sm font-semibold text-gray-800 truncate">{menu.title}</p>
+                                                                    <p className="text-xs text-gray-500">{menu.category}</p>
+                                                                </div>
+                                                                <span className="text-sm font-semibold text-orange-500 whitespace-nowrap">
+                                                                    {Number(menu.price).toLocaleString('fr-FR')} {menu.currency || 'XAF'}
+                                                                </span>
+                                                            </button>
+                                                        </li>
+                                                    );
+                                                })}
+                                            </ul>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>

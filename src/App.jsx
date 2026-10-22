@@ -4,6 +4,7 @@ import Favorite from './pages/Favorite';
 import Card from './pages/Card';
 import OrderForm from './pages/OrderForm';
 import CardDescription from './pages/CardDescription';
+import SearchResults from './pages/SearchResults';
 import SuiviCommande from './pages/SuiviCommande';
 import SuiviReservation from './pages/SuiviReservation';
 import Login from './components/Login';
@@ -38,6 +39,7 @@ function App() {
         <Route path='/favorite' element={<MainLayout><Favorite /></MainLayout>} />
         <Route path='/orderform' element={<MainLayout><OrderForm /></MainLayout>} />
         <Route path='/card-description/:id' element={<MainLayout><CardDescription /></MainLayout>} />
+        <Route path='/recherche' element={<MainLayout><SearchResults /></MainLayout>} />
         <Route path='/suivi' element={<MainLayout><SuiviCommande /></MainLayout>} />
         <Route path='/suivi/:token' element={<MainLayout><SuiviCommande /></MainLayout>} />
         <Route path='/suivi-reservation' element={<MainLayout><SuiviReservation /></MainLayout>} />
