@@ -40,6 +40,36 @@ export const createOrder = async (orderData) => {
 };
 
 /**
+ * Suivi PUBLIC d'une commande par son jeton (32 hex, renvoyé à la création).
+ * L'id n'est plus exposé en public (anti-énumération) — action=getById est
+ * désormais réservée à l'admin.
+ *
+ * @param {string} token Jeton de suivi (32 hex — espaces acceptés, retirés)
+ * @param {{ poll?: boolean }} options poll=true pour le rafraîchissement auto :
+ *        le throttle serveur (partagé par session → multi-onglets) ne sert
+ *        alors qu'1 lecture complète / 10 s ; réponse possible { unchanged: true }
+ *        à conserver telle quelle (aucun champ order).
+ * Retour : { success, order } — payload SANS données personnelles.
+ * Erreurs : 404 (jeton inconnu ou malformé — même réponse, pas d'oracle),
+ *           429 (trop de rafraîchissements — Retry-After)
+ */
+export const getOrderByToken = async (token, { poll = false } = {}) => {
+    try {
+        const clean = String(token).replace(/\s+/g, '');
+        const pollParam = poll ? '&poll=1' : '';
+        const url = `${API_BASE_URL}/index.php?module=order&action=getByToken&token=${encodeURIComponent(clean)}${pollParam}`;
+        const response = await fetch(url, {
+            ...defaultOptions,
+            method: 'GET',
+        });
+        return await handleResponse(response);
+    } catch (error) {
+        console.error('Erreur récupération commande:', error);
+        throw error;
+    }
+};
+
+/**
  * Changer le statut d'une commande (toggleComplete) - ✅ CORRIGÉ
  */
 export const toggleCompleteOrder = async (id_commande, is_completed) => {

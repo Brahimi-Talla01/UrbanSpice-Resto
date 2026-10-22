@@ -10,6 +10,7 @@ const ReservationForm = () => {
     const [showSuccessPopup, setShowSuccessPopup] = useState(false);
     const [secondsLeft, setSecondsLeft] = useState(30);
     const [reservationId, setReservationId] = useState(null);
+    const [trackingToken, setTrackingToken] = useState(null); // jeton de suivi
     let countdownInterval = null;
 
     const [formData, setFormData] = useState({
@@ -50,6 +51,14 @@ const ReservationForm = () => {
         if (countdownInterval) clearInterval(countdownInterval);
         setShowSuccessPopup(false);
         navigate('/');
+    };
+
+    // Suivre la réservation : ouvre la page de suivi publique
+    // /suivi-reservation/<jeton> (annule le compte à rebours)
+    const goToTracking = () => {
+        if (countdownInterval) clearInterval(countdownInterval);
+        setShowSuccessPopup(false);
+        navigate(`/suivi-reservation/${trackingToken}`);
     };
 
     const handleSubmit = async (e) => {
@@ -94,6 +103,7 @@ const ReservationForm = () => {
 
             if (response.success) {
                 setReservationId(response.reservation_id);
+                setTrackingToken(response.tracking_token);
                 setShowSuccessPopup(true);
                 startCountdown();
             } else {
@@ -273,6 +283,14 @@ const ReservationForm = () => {
                             <p className="text-gray-600 text-sm mb-4">
                                 Nous vous contacterons dans les minutes qui suivent pour confirmer votre réservation.
                             </p>
+
+                            {/* N° de suivi : à conserver pour retrouver la réservation */}
+                            {trackingToken && (
+                                <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-4 text-left">
+                                    <p className="text-xs text-gray-500 mb-1">N° de suivi (à conserver) :</p>
+                                    <p className="text-sm font-mono font-semibold text-gray-900 break-all select-all">{trackingToken}</p>
+                                </div>
+                            )}
                             
                             <div className="bg-gray-100 rounded-lg p-3 mt-4">
                                 <p className="text-sm text-gray-600">
@@ -293,6 +311,15 @@ const ReservationForm = () => {
                         
                         <div className="bg-gray-50 p-4 flex gap-3">
                             <button
+                                onClick={goToTracking}
+                                className="flex-1 px-4 py-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-lg hover:from-yellow-600 hover:to-orange-600 transition-colors cursor-pointer flex items-center justify-center gap-2"
+                            >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                Suivre ma réservation
+                            </button>
+                            <button
                                 onClick={closePopupAndRedirect}
                                 className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors cursor-pointer flex items-center justify-center gap-2"
                             >
@@ -300,15 +327,6 @@ const ReservationForm = () => {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                                 </svg>
                                 Accueil
-                            </button>
-                            <button
-                                onClick={closePopupAndRedirect}
-                                className="flex-1 px-4 py-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-lg hover:from-yellow-600 hover:to-orange-600 transition-colors cursor-pointer flex items-center justify-center gap-2"
-                            >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                </svg>
-                                OK
                             </button>
                         </div>
                     </div>

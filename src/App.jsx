@@ -4,6 +4,8 @@ import Favorite from './pages/Favorite';
 import Card from './pages/Card';
 import OrderForm from './pages/OrderForm';
 import CardDescription from './pages/CardDescription';
+import SuiviCommande from './pages/SuiviCommande';
+import SuiviReservation from './pages/SuiviReservation';
 import Login from './components/Login';
 import { useContext } from 'react';
 import { StoreContext } from './contexts/StoreContext';
@@ -35,6 +37,10 @@ function App() {
         <Route path='/favorite' element={<MainLayout><Favorite /></MainLayout>} />
         <Route path='/orderform' element={<MainLayout><OrderForm /></MainLayout>} />
         <Route path='/card-description/:id' element={<MainLayout><CardDescription /></MainLayout>} />
+        <Route path='/suivi' element={<MainLayout><SuiviCommande /></MainLayout>} />
+        <Route path='/suivi/:token' element={<MainLayout><SuiviCommande /></MainLayout>} />
+        <Route path='/suivi-reservation' element={<MainLayout><SuiviReservation /></MainLayout>} />
+        <Route path='/suivi-reservation/:token' element={<MainLayout><SuiviReservation /></MainLayout>} />
 
         <Route path="/admin" element={<AdminLayout> {true ? <Layout /> : <Login /> } </AdminLayout>} > 
           <Route index element={<Dashboard />} />

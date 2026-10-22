@@ -1,7 +1,7 @@
 import { useContext, useState } from 'react'
 import { StoreContext } from '../contexts/StoreContext';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, X, CheckCircle, Home } from 'lucide-react';
+import { ArrowLeft, X, CheckCircle, Home, Truck } from 'lucide-react';
 import { createOrder } from '../../services/orderApi';
 import { toast } from 'react-toastify';
 
@@ -12,6 +12,7 @@ const OrderForm = () => {
     const [showSuccessPopup, setShowSuccessPopup] = useState(false);
     const [secondsLeft, setSecondsLeft] = useState(30);
     const [orderId, setOrderId] = useState(null);
+    const [trackingToken, setTrackingToken] = useState(null); // jeton de suivi /suivi/:token
     let countdownInterval = null;
 
     // État local pour le formulaire
@@ -82,6 +83,14 @@ const OrderForm = () => {
         navigate('/');
     };
 
+    // Suivre la commande (roadmap n°6) : ouvre la page de suivi publique
+    // /suivi/<jeton> — le compte à rebours est annulé, on quitte la page.
+    const goToTracking = () => {
+        if (countdownInterval) clearInterval(countdownInterval);
+        setShowSuccessPopup(false);
+        navigate(`/suivi/${trackingToken}`);
+    };
+
     const handleSubmitOrder = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
@@ -115,6 +124,7 @@ const OrderForm = () => {
                 // Réinitialiser le compte à rebours
                 setSecondsLeft(30);
                 setOrderId(response.order_id);
+                setTrackingToken(response.tracking_token);
                 // Afficher la popup de succès
                 setShowSuccessPopup(true);
                 // Démarrer le compte à rebours
@@ -122,7 +132,7 @@ const OrderForm = () => {
                 
                 // Vider le panier (local + serveur) une fois la commande créée
                 clearCart();
-                
+
             } else {
                 toast.error(response.message || "Erreur lors de la création");
             }
@@ -344,6 +354,14 @@ const OrderForm = () => {
                             <p className="text-gray-600 text-sm mb-4">
                                 Nous vous contacterons dans les minutes qui suivent afin d'organiser la livraison de votre commande.
                             </p>
+
+                            {/* N° de suivi : à conserver pour retrouver la commande */}
+                            {trackingToken && (
+                                <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-4 text-left">
+                                    <p className="text-xs text-gray-500 mb-1">N° de suivi (à conserver) :</p>
+                                    <p className="text-sm font-mono font-semibold text-gray-900 break-all select-all">{trackingToken}</p>
+                                </div>
+                            )}
                             
                             {/* Icônes de livraison */}
                             <div className="flex justify-center gap-6 my-4">
@@ -391,21 +409,21 @@ const OrderForm = () => {
                             </div>
                         </div>
                         
-                        {/* Footer de la popup */}
+                        {/* Footer de la popup : suivi de commande (feature n°6) + retour accueil */}
                         <div className="bg-gray-50 p-4 flex gap-3">
+                            <button
+                                onClick={goToTracking}
+                                className="flex-1 px-4 py-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-lg hover:from-yellow-600 hover:to-orange-600 transition-colors cursor-pointer flex items-center justify-center gap-2"
+                            >
+                                <Truck size={18} />
+                                Suivre ma commande
+                            </button>
                             <button
                                 onClick={closePopupAndRedirect}
                                 className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors cursor-pointer flex items-center justify-center gap-2"
                             >
                                 <Home size={18} />
-                                Accueil maintenant
-                            </button>
-                            <button
-                                onClick={closePopupAndRedirect}
-                                className="flex-1 px-4 py-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-lg hover:from-yellow-600 hover:to-orange-600 transition-colors cursor-pointer flex items-center justify-center gap-2"
-                            >
-                                <CheckCircle size={18} />
-                                OK
+                                Accueil
                             </button>
                         </div>
                     </div>
