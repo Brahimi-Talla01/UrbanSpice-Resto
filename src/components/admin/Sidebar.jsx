@@ -7,6 +7,7 @@ import {
   Wrench, 
   ChefHat, 
   MessageSquareMore, 
+  Mail,
 } from 'lucide-react';
 import AdminProfileSection from './AdminProfileSection';
 import { useAuth } from '../../contexts/StoreContext';
@@ -22,6 +23,7 @@ const Sidebar = () => {
     { name: 'Service', path: '/admin/service', icon: Wrench },
     { name: 'Chefs Cuisinier', path: '/admin/chefhat', icon: ChefHat },
     { name: 'Témoignage', path: '/admin/temoignage', icon: MessageSquareMore },
+    { name: 'Newsletter', path: '/admin/newsletter', icon: Mail },
   ];
 
   return (

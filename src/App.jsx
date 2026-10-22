@@ -17,6 +17,7 @@ import BookATable from './pages/admin/BookATable';
 import Service from './pages/admin/Service';
 import Chefs from './pages/admin/Chefs';
 import Testimony from './pages/admin/Testimony';
+import Newsletter from './pages/admin/Newsletter';
 import AdminForm from './components/admin/AdminForm';
 
 function App() {
@@ -43,6 +44,7 @@ function App() {
           <Route path='service' element={<Service />} />
           <Route path='chefhat' element={<Chefs />} />
           <Route path='temoignage' element={<Testimony />} />
+          <Route path='newsletter' element={<Newsletter />} />
         </Route>
       </Routes>
       
