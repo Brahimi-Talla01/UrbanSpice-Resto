@@ -6,7 +6,7 @@ import { createOrder } from '../../services/orderApi';
 import { toast } from 'react-toastify';
 
 const OrderForm = () => {
-    const { getTotalAmount, getTotalCart, cartItems, storeMenus } = useContext(StoreContext);
+    const { getTotalAmount, getTotalCart, cartItems, storeMenus, clearCart } = useContext(StoreContext);
     const navigate = useNavigate();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showSuccessPopup, setShowSuccessPopup] = useState(false);
@@ -120,8 +120,8 @@ const OrderForm = () => {
                 // Démarrer le compte à rebours
                 startCountdown();
                 
-                // Vider le panier (optionnel)
-                // Vous pouvez ajouter une fonction pour vider le panier ici
+                // Vider le panier (local + serveur) une fois la commande créée
+                clearCart();
                 
             } else {
                 toast.error(response.message || "Erreur lors de la création");

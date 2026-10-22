@@ -3,6 +3,8 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { authAPI } from "../../services/api";
 import { getPublishedMenus } from "../../services/menuApi";
+import { getFavorites, syncFavorites } from "../../services/favoriteApi";
+import { getCart, syncCart, clearCartOnServer } from "../../services/cartApi";
 
 export const StoreContext = createContext();
 
@@ -44,6 +46,11 @@ const StoreContextProvider = (props) => {
     const [isShowLogin, setIsShowLogin] = useState(false);
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    // Vrai seulement quand le check de session initial est terminé.
+    // `loading` passe à false dès le montage tant que `user` est null
+    // (voir l'effet if (!user) setLoading(false)) — insuffisant pour
+    // AdminRoute, qui redirigerait avant même la fin du vérif serveur.
+    const [sessionChecked, setSessionChecked] = useState(false);
 
     // Persister le panier et les favoris à chaque changement
     useEffect(() => {
@@ -53,6 +60,113 @@ const StoreContextProvider = (props) => {
     useEffect(() => {
         localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(heartItems));
     }, [heartItems]);
+
+    // ── Synchronisation serveur (table `favoris` / `panier`) ─────
+    // À la connexion : on FUSIONNE l'état serveur dans l'état local
+    // (union — rien n'est perdu si on avait déjà ajouté des articles
+    // hors ligne ou depuis un autre appareil).
+    // Ensuite chaque changement local est renvoyé au serveur (miroir),
+    // en arrière-plan : une panne réseau ne bloque jamais l'interface.
+    const [serverSynced, setServerSynced] = useState(false);
+
+    useEffect(() => {
+        if (!user) {
+            setServerSynced(false);
+            return;
+        }
+
+        let cancelled = false;
+
+        const mergeFromServer = async () => {
+            try {
+                const [favRes, cartRes] = await Promise.all([
+                    getFavorites().catch(() => null),
+                    getCart().catch(() => null)
+                ]);
+
+                if (cancelled) return;
+
+                // Favoris serveur → local (union)
+                const serverFavs = favRes?.success && Array.isArray(favRes.favorites)
+                    ? favRes.favorites.map((fav) => String(fav.id_menu))
+                    : [];
+                if (serverFavs.length > 0) {
+                    setHeartItems((prev) => {
+                        const merged = { ...prev };
+                        serverFavs.forEach((id) => {
+                            if (!merged[id]) merged[id] = 1;
+                        });
+                        return merged;
+                    });
+                }
+
+                // Panier serveur → local (union : la quantité locale l'emporte)
+                const serverItems = cartRes?.success && Array.isArray(cartRes.items)
+                    ? cartRes.items
+                    : [];
+                if (serverItems.length > 0) {
+                    setCartItems((prev) => {
+                        const merged = { ...prev };
+                        serverItems.forEach((row) => {
+                            const id = String(row.id_menu);
+                            const quantity = Number(row.quantity) || 0;
+                            if (quantity > 0 && !merged[id]) merged[id] = quantity;
+                        });
+                        return merged;
+                    });
+                }
+            } catch (error) {
+                console.error('Erreur synchronisation serveur:', error);
+            } finally {
+                if (!cancelled) setServerSynced(true);
+            }
+        };
+
+        mergeFromServer();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [user]);
+
+    // Miroir local → serveur, débouncé (un seul appel par série de
+    // clics au lieu d'un appel par mutation)
+    useEffect(() => {
+        if (!user || !serverSynced) return;
+
+        const timer = setTimeout(() => {
+            const favoriteIds = Object.keys(heartItems)
+                .filter((id) => heartItems[id] > 0)
+                .map(Number)
+                .filter((id) => Number.isInteger(id) && id > 0);
+
+            const cartPayload = Object.entries(cartItems)
+                .filter(([, quantity]) => quantity > 0)
+                .map(([id, quantity]) => ({ id_menu: Number(id), quantity }))
+                .filter((row) => Number.isInteger(row.id_menu) && row.id_menu > 0);
+
+            Promise.all([
+                syncFavorites(favoriteIds),
+                syncCart(cartPayload)
+            ]).catch((error) => {
+                console.error('Erreur envoi panier/favoris au serveur:', error);
+            });
+        }, 400);
+
+        return () => clearTimeout(timer);
+    }, [cartItems, heartItems, user, serverSynced]);
+
+    // Vider le panier : local + serveur (après commande réussie)
+    const clearCart = async () => {
+        setCartItems({});
+        if (user) {
+            try {
+                await clearCartOnServer();
+            } catch (error) {
+                console.error('Erreur vidage panier serveur:', error);
+            }
+        }
+    };
 
     // Charger une seule fois les menus publiés : prix, titres et images
     // utilisés par le panier / les favoris viennent de la BDD.
@@ -129,6 +243,7 @@ const StoreContextProvider = (props) => {
                 setUser(null);
             } finally {
                 setLoading(false);
+                setSessionChecked(true);
             }
         };
 
@@ -337,6 +452,7 @@ const StoreContextProvider = (props) => {
     const contextValue = {
         user,
         loading,
+        sessionChecked,
         Register,
         Login,
         logout,
@@ -346,6 +462,7 @@ const StoreContextProvider = (props) => {
         addToCart,
         setCartItems,
         removeToCart,
+        clearCart,
         getTotalAmount,
         getTotalCart,
         removeAllToCart,
