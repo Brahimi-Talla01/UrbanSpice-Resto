@@ -1,4 +1,5 @@
 import { Link, Outlet } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
 import { assets } from '../../assets/assets/assets';
 import Sidebar from '../../components/admin/Sidebar';
 
@@ -27,6 +28,21 @@ const Layout = () => {
             <Sidebar />
             <Outlet />
         </div>
+
+        {/* Toasts de l'interface admin : sans container ici, chaque page admin
+            (Réservation, Commande, Newsletter…) appelait toast.success/error
+            dans le vide — seules 4 pages publiques en montaient un. */}
+        <ToastContainer
+            position="top-right"
+            autoClose={2000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+        />
     </>
   )
 }
