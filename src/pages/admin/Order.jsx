@@ -80,7 +80,7 @@ const Order = () => {
                 return JSON.parse(items);
             }
             return items;
-        } catch (e) {
+        } catch {
             return [];
         }
     };
@@ -289,8 +289,8 @@ const Order = () => {
                                                                 </div>
                                                             </div>
                                                             
-                                                            {/* Liste des articles commandés */}
-                                                            {items.length > 0 && (
+                                                            {/* Liste des articles commandés (ou mention si ancien) */}
+                                                            {items.length > 0 ? (
                                                                 <div className='bg-white rounded-lg p-4 border border-gray-200'>
                                                                     <h5 className='font-medium text-gray-800 mb-3 flex items-center gap-2'>
                                                                         <span>🍽️</span> Articles commandés
@@ -325,6 +325,15 @@ const Order = () => {
                                                                             </tfoot>
                                                                         </table>
                                                                     </div>
+                                                                </div>
+                                                            ) : (
+                                                                <div className='bg-white rounded-lg p-4 border border-gray-200'>
+                                                                    <h5 className='font-medium text-gray-800 mb-3 flex items-center gap-2'>
+                                                                        <span>🍽️</span> Articles commandés
+                                                                    </h5>
+                                                                    <p className='text-sm text-gray-400 italic'>
+                                                                        Détail non enregistré — commande passée avant la mise en place du suivi des articles.
+                                                                    </p>
                                                                 </div>
                                                             )}
                                                         </div>
