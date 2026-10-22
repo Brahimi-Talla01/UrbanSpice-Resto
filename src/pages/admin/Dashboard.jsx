@@ -7,7 +7,8 @@ import {
   Clock,
   Star,
   ChefHat,
-  Package
+  Package,
+  ShoppingBag
 } from 'lucide-react';
 import DashboardChart from '../../components/admin/DashboardChart';
 import { getOverview } from '../../../services/statsApi';
@@ -47,6 +48,7 @@ const Dashboard = () => {
   const revenusParMois = data?.revenusParMois ?? [];
   const topCategories = data?.topCategories ?? [];
   const topMenus = data?.topMenus ?? [];
+  const topPlats = data?.topPlats ?? [];
   const recentOrders = data?.commandesRecentes ?? [];
 
   const formatAmount = (value) => Number(value || 0).toLocaleString('fr-FR');
@@ -94,6 +96,14 @@ const Dashboard = () => {
       icon: DollarSign,
       lightBg: 'bg-green-50',
       textColor: 'text-green-600'
+    },
+    {
+      title: 'Articles Vendus',
+      value: formatAmount(stats.articles_vendus),
+      sub: 'plats commandés',
+      icon: ShoppingBag,
+      lightBg: 'bg-indigo-50',
+      textColor: 'text-indigo-600'
     },
     {
       title: 'Chefs Cuisiniers',
@@ -225,7 +235,18 @@ const Dashboard = () => {
                                 #{String(order.id_commande).padStart(3, '0')}
                               </td>
                               <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-500'>{order.custumer_name}</td>
-                              <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-500'>{order.total_item}</td>
+                              <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-500'>
+                                {order.items && order.items.length > 0 ? (
+                                  <span title={order.items.map((it) => `${it.quantity}× ${it.title}`).join(', ')}>
+                                    {order.items.slice(0, 2).map((it) => `${it.quantity}× ${it.title}`).join(', ')}
+                                    {order.items.length > 2 ? '…' : ''}
+                                  </span>
+                                ) : (
+                                  <span className='text-gray-400 italic' title='Détail non enregistré — commande antérieure au suivi des articles'>
+                                    {order.total_item} (détail non enregistré)
+                                  </span>
+                                )}
+                              </td>
                               <td className='px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900'>
                                 {formatAmount(order.total_amount)} {order.currency}
                               </td>
@@ -327,6 +348,34 @@ const Dashboard = () => {
                       <div className='text-right'>
                         <p className='text-sm font-bold text-gray-900'>{formatAmount(menu.price)} {menu.currency}</p>
                       </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Plats les Plus Vendus — depuis la table order_items */}
+            <div className='bg-white rounded-xl shadow-sm border border-gray-200 p-6'>
+              <div className='flex items-center justify-between mb-6'>
+                <h2 className='text-lg font-semibold text-gray-900'>Plats les Plus Vendus</h2>
+                <span className='text-sm text-gray-500'>Par quantité</span>
+              </div>
+
+              {topPlats.length === 0 ? (
+                <div className='text-center text-gray-400 py-6'>Aucun plat vendu pour le moment.</div>
+              ) : (
+                <div className='space-y-4'>
+                  {topPlats.map((plat, index) => (
+                    <div key={`${plat.titre}-${index}`} className='flex items-center justify-between'>
+                      <div className='flex items-center gap-3 min-w-0'>
+                        <span className='w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-bold shrink-0'>
+                          {index + 1}
+                        </span>
+                        <span className='text-sm text-gray-600 truncate'>{plat.titre}</span>
+                      </div>
+                      <span className='text-sm font-semibold text-gray-900 whitespace-nowrap ml-3'>
+                        {formatAmount(plat.quantite)} vendus
+                      </span>
                     </div>
                   ))}
                 </div>
