@@ -183,7 +183,7 @@ const CardDescription = () => {
                     <div className='w-20 h-1 bg-gradient-to-r from-yellow-500 to-orange-500 mx-auto rounded-full'></div>
                 </div>
 
-                <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6'>
+                <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
                     {otherMenus
                         .filter((card) => (card.id_menu || card.id) !== menuId)
                         .slice(0, 6)
