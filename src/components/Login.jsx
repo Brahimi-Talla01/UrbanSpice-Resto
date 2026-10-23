@@ -85,7 +85,9 @@ const Login = ({ onClose, isShowLogin }) => {
       
       setMessage({
         type: "success",
-        text: "Compte créé avec succès!..."
+        // Message serveur : « Inscription terminée » si le compte existait
+        // déjà en passif (créé lors d'une commande/réservation).
+        text: response?.message || "Compte créé avec succès!..."
       });
       
       setTimeout(() => {

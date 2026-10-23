@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
+import { StoreContext } from '../contexts/StoreContext';
 import { assets } from '../assets/assets/assets';
 import { createReservation } from '../../services/reservationApi';
 import { toast } from 'react-toastify';
@@ -6,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 
 const ReservationForm = () => {
     const navigate = useNavigate();
+    const { user } = useContext(StoreContext); // inscription passive
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showSuccessPopup, setShowSuccessPopup] = useState(false);
     const [secondsLeft, setSecondsLeft] = useState(30);
@@ -289,6 +291,17 @@ const ReservationForm = () => {
                                 <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-4 text-left">
                                     <p className="text-xs text-gray-500 mb-1">N° de suivi (à conserver) :</p>
                                     <p className="text-sm font-mono font-semibold text-gray-900 break-all select-all">{trackingToken}</p>
+                                </div>
+                            )}
+
+                            {/* Inscription passive (docs/inscription_passive.md) */}
+                            {!user && (
+                                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 text-left">
+                                    <p className="text-xs text-blue-800">
+                                        📧 Vous n'êtes pas encore inscrit : un compte UrbanSpice a été
+                                        créé avec votre email pour gérer vos réservations. Finalisez
+                                        votre inscription (mot de passe) depuis le formulaire d'inscription.
+                                    </p>
                                 </div>
                             )}
                             

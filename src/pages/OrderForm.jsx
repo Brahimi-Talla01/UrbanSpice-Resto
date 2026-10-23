@@ -6,7 +6,7 @@ import { createOrder } from '../../services/orderApi';
 import { toast } from 'react-toastify';
 
 const OrderForm = () => {
-    const { getTotalAmount, getTotalCart, cartItems, storeMenus, clearCart } = useContext(StoreContext);
+    const { getTotalAmount, getTotalCart, cartItems, storeMenus, clearCart, user } = useContext(StoreContext);
     const navigate = useNavigate();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showSuccessPopup, setShowSuccessPopup] = useState(false);
@@ -360,6 +360,17 @@ const OrderForm = () => {
                                 <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-4 text-left">
                                     <p className="text-xs text-gray-500 mb-1">N° de suivi (à conserver) :</p>
                                     <p className="text-sm font-mono font-semibold text-gray-900 break-all select-all">{trackingToken}</p>
+                                </div>
+                            )}
+
+                            {/* Inscription passive (docs/inscription_passive.md) */}
+                            {!user && (
+                                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 text-left">
+                                    <p className="text-xs text-blue-800">
+                                        📧 Vous n'êtes pas encore inscrit : un compte UrbanSpice a été
+                                        créé avec votre email pour suivre vos commandes. Finalisez votre
+                                        inscription (mot de passe) depuis le formulaire d'inscription.
+                                    </p>
                                 </div>
                             )}
                             
