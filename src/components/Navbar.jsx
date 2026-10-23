@@ -39,6 +39,11 @@ const Navbar = () => {
     }, [mobileMenuOpen]);
 
 
+    // Défilement différé : les sections (#home, #about…) n'existent que
+    // sur la page d'accueil. Clic depuis une autre page (panier, paiement…)
+    // → on navigue vers '/' puis on défile dès que la section est rendue.
+    const [pendingScroll, setPendingScroll] = useState(null);
+
     // Fonction pour le smooth scroll
     const scrollToSection = (href) => {
         const sectionId = href.replace('#', '');
@@ -49,7 +54,31 @@ const Navbar = () => {
                     top: offsetTop,
                     behavior: 'smooth'
                 });
-        }    };
+        } else {
+            setPendingScroll(sectionId);
+            navigate('/');
+        }
+    };
+
+    // Exécute le défilement une fois la page d'accueil rendue
+    useEffect(() => {
+        if (!pendingScroll) return;
+        let attempts = 0;
+        let rafId;
+        const tryScroll = () => {
+            const element = document.getElementById(pendingScroll);
+            if (element) {
+                window.scrollTo({ top: element.offsetTop - 80, behavior: 'smooth' });
+                setPendingScroll(null);
+            } else if (++attempts < 60) {
+                rafId = requestAnimationFrame(tryScroll);
+            } else {
+                setPendingScroll(null);
+            }
+        };
+        rafId = requestAnimationFrame(tryScroll);
+        return () => cancelAnimationFrame(rafId);
+    }, [pendingScroll]);
 
     useEffect(() => {
         const handleScroll = () => {
