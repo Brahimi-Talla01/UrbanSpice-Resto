@@ -2,7 +2,7 @@ import { useContext, useState, useEffect } from 'react';
 import { StoreContext } from '../contexts/StoreContext';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, CreditCard } from 'lucide-react';
 import { getPublishedMenus } from '../../services/menuApi';
 
 const Card = () => {
@@ -237,7 +237,7 @@ const Card = () => {
                 onClick={() => navigate('/orderform')} 
                 disabled={getTotalAmount() === 0}
                 type='button' 
-                className='w-full mb-6 py-3 px-6 cursor-pointer bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-600 hover:to-amber-600 text-white font-bold text-lg rounded shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-yellow-200 relative overflow-hidden group'
+                className='w-full mb-3 py-3 px-6 cursor-pointer bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-600 hover:to-amber-600 text-white font-bold text-lg rounded shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-yellow-200 relative overflow-hidden group'
               >
                 <div className='absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300'></div>
                 <span className='relative flex items-center justify-center text-sm gap-2'>
@@ -246,6 +246,19 @@ const Card = () => {
                   </svg>
                   Valider la commande
                   <ArrowRight className='w-4 h-4 animate-ping' />
+                </span>
+              </button>
+
+              {/* Paiement simulé (frontend only) — page /paiement, voir docs/paiement_simulation.md */}
+              <button
+                onClick={() => navigate('/paiement')}
+                disabled={getTotalAmount() === 0}
+                type='button'
+                className='w-full mb-6 py-3 px-6 cursor-pointer border-2 border-yellow-500 text-yellow-600 hover:bg-yellow-50 font-bold text-lg rounded shadow hover:shadow-lg transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-yellow-100 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none'
+              >
+                <span className='flex items-center justify-center text-sm gap-2'>
+                  <CreditCard className='w-5 h-5' />
+                  Payer (simulation)
                 </span>
               </button>
 

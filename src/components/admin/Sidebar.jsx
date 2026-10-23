@@ -5,9 +5,9 @@ import {
   Package, 
   CalendarClock, 
   Wrench, 
-  ChefHat, 
-  MessageSquareMore, 
+  ChefHat,  MessageSquareMore,
   Mail,
+  Users,
 } from 'lucide-react';
 import AdminProfileSection from './AdminProfileSection';
 import { useAuth } from '../../contexts/StoreContext';
@@ -24,6 +24,7 @@ const Sidebar = () => {
     { name: 'Chefs Cuisinier', path: '/admin/chefhat', icon: ChefHat },
     { name: 'Témoignage', path: '/admin/temoignage', icon: MessageSquareMore },
     { name: 'Newsletter', path: '/admin/newsletter', icon: Mail },
+    { name: 'Utilisateurs', path: '/admin/users', icon: Users },
   ];
 
   return (

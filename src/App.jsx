@@ -7,6 +7,7 @@ import CardDescription from './pages/CardDescription';
 import SearchResults from './pages/SearchResults';
 import SuiviCommande from './pages/SuiviCommande';
 import SuiviReservation from './pages/SuiviReservation';
+import Payment from './pages/Payment';
 import Login from './components/Login';
 import { useContext } from 'react';
 import { StoreContext } from './contexts/StoreContext';
@@ -21,6 +22,7 @@ import Service from './pages/admin/Service';
 import Chefs from './pages/admin/Chefs';
 import Testimony from './pages/admin/Testimony';
 import Newsletter from './pages/admin/Newsletter';
+import Users from './pages/admin/Users';
 import AdminForm from './components/admin/AdminForm';
 import AdminRoute from './components/admin/AdminRoute';
 
@@ -44,6 +46,7 @@ function App() {
         <Route path='/suivi/:token' element={<MainLayout><SuiviCommande /></MainLayout>} />
         <Route path='/suivi-reservation' element={<MainLayout><SuiviReservation /></MainLayout>} />
         <Route path='/suivi-reservation/:token' element={<MainLayout><SuiviReservation /></MainLayout>} />
+        <Route path='/paiement' element={<MainLayout><Payment /></MainLayout>} />
 
         {/* Routes admin protégées : AdminRoute vérifie le rôle dans StoreContext
             (le backend renvoie déjà 401/403 via AuthMiddleware) */}
@@ -56,6 +59,7 @@ function App() {
           <Route path='chefhat' element={<Chefs />} />
           <Route path='temoignage' element={<Testimony />} />
           <Route path='newsletter' element={<Newsletter />} />
+          <Route path='users' element={<Users />} />
         </Route>
       </Routes>
       
